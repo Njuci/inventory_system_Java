@@ -70,6 +70,7 @@ public class BDD {
    String rslt= "";   
    Statement st;
    try{
+       
    st=connexion.createStatement();
    st.executeUpdate(query);
    rslt=query;
@@ -118,7 +119,7 @@ public class BDD {
         Sql += ",";
         }
         }
-    Sql += " FORM " + table +" WHERE "+param;
+    Sql += " FROM " + table +" WHERE "+param;
 
        System.out.println(Sql);
        return this.RecupererDonne(Sql);
