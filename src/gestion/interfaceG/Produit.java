@@ -268,6 +268,12 @@ public void ChampsActual(){
 
         getContentPane().add(jScrollPane2);
         jScrollPane2.setBounds(10, 120, 870, 100);
+
+        stock_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stock_fieldActionPerformed(evt);
+            }
+        });
         getContentPane().add(stock_field);
         stock_field.setBounds(360, 420, 121, 26);
 
@@ -491,6 +497,10 @@ public void ChampsActual(){
         
         
     }//GEN-LAST:event_table_prodMouseClicked
+
+    private void stock_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stock_fieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_stock_fieldActionPerformed
 
     /**
      * @param args the command line arguments
