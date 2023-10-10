@@ -37,7 +37,7 @@ public class Produit extends javax.swing.JFrame {
         
     }
     public void afficherTable() throws ClassNotFoundException, SQLException {
-    String[] colonnes = {"id","code_produit","ref","designation","fournisseur","remise","prix_unitaire","stock"};
+    String[] colonnes = {"id","code_produit","ref","designation","fournisseur","remise","prix_unitaire","stock","date"};
     
     // Récupérer le ResultSet à partir de votre méthode RecupererDonneTableFiltrePar()
     ResultSet resultSet = base_donne.RecupererDonneTableFiltrePar(colonnes, "produit");
@@ -234,21 +234,21 @@ public void ChampsActual(){
 
         table_prod.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "id", "code_produit", "ref", "designation", "fournisseur", "remise", "prix_unitaire", "stock"
+                "id", "code_produit", "ref", "designation", "fournisseur", "remise", "prix_unitaire", "stock", "Date"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -267,7 +267,7 @@ public void ChampsActual(){
         jScrollPane2.setViewportView(table_prod);
 
         getContentPane().add(jScrollPane2);
-        jScrollPane2.setBounds(10, 120, 870, 100);
+        jScrollPane2.setBounds(10, 120, 930, 100);
 
         stock_field.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

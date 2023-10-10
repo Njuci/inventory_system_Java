@@ -31,11 +31,14 @@ public class DIG extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenu1 = new javax.swing.JMenu();
         probtn = new javax.swing.JButton();
         vebtn = new javax.swing.JButton();
         agbtn = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+
+        jMenu1.setText("jMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -134,7 +137,14 @@ public class DIG extends javax.swing.JFrame {
 
     private void probtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_probtnActionPerformed
         // TODO add your handling code here:
-        Cahier v= new Cahier();
+        Cahier v = null;
+        try {
+            v = new Cahier();
+        } catch (SQLException ex) {
+            Logger.getLogger(DIG.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DIG.class.getName()).log(Level.SEVERE, null, ex);
+        }
         v.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_probtnActionPerformed
@@ -200,6 +210,7 @@ public class DIG extends javax.swing.JFrame {
     private javax.swing.JButton agbtn;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JButton probtn;
     private javax.swing.JButton vebtn;
     // End of variables declaration//GEN-END:variables

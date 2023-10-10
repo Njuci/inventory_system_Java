@@ -156,7 +156,14 @@ public class login extends javax.swing.JFrame {
                 this.dispose();
               }
             else{
-                Cahier ag= new Cahier();
+                Cahier ag = null;
+                try {
+                    ag = new Cahier();
+                } catch (SQLException ex) {
+                    Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 ag.setVisible(true);
                 this.dispose();
             

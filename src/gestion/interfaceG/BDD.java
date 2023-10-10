@@ -35,6 +35,24 @@ public class BDD {
     }
 
 
+
+
+    public String createFacture() throws SQLException {
+        PreparedStatement statement = connexion.prepareStatement("INSERT INTO facture (id) VALUES (DEFAULT)", Statement.RETURN_GENERATED_KEYS);
+        statement.executeUpdate();
+        ResultSet resultSet = statement.getGeneratedKeys();
+        resultSet.next();
+        long id = resultSet.getLong(1);
+        String formattedId = String.format("fac%05d", id);
+        String id_str= String.valueOf(id);
+        String [] contenu= {formattedId};
+        String [] colone={"fac_num"};
+        this.updateDonneTable("facture",colone ,contenu , "id='"+id_str+"'");
+        return formattedId;
+    }
+
+
+
     public Connection ConnectDB(){
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
