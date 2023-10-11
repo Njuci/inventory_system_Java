@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -32,11 +33,24 @@ public class depenses extends javax.swing.JFrame {
         this.setResizable(false);
        
         date_set();
+       combox_remplissage();
         afficherTable();
+        
+        
     }
+    public void total_table(){
+        int lastRow = table_depense.getRowCount() - 1;
+    int lastColumn = table_depense.getColumnCount() - 1;
+    total_lbl.setText( String.valueOf( table_depense.getValueAt(lastRow, lastColumn)));
+    
+    
+    }
+    
+    
+    
     public void afficherTable() throws ClassNotFoundException, SQLException {
     String[] colonnes = {"id","code_produit","ref","designation","fournisseur","remise","prix_unitaire","stock","date"};
-    rslt = base_donne.RecupererDonne("SELECT id, date, montant,\n" +
+    rslt = base_donne.RecupererDonne("SELECT id, libele,date, montant,\n" +
 "       @cumul := @cumul + montant AS cumul\n" +
 "FROM depenses, (SELECT @cumul := 0) c\n" +
 "ORDER BY date");
@@ -45,8 +59,19 @@ public class depenses extends javax.swing.JFrame {
     // Créer un modèle de tableau avec le ResultSet
     
     // Définir le modèle de tableau sur le composant table_user
-    table_depense.setModel(new ResultSetTableModel(rslt));}
+    table_depense.setModel(new ResultSetTableModel(rslt));
+    total_table();}
+    public void combox_remplissage() throws SQLException, ClassNotFoundException {
+        rslt = base_donne.RecupererDonne("SELECT DISTINCT date FROM depenses order by -id");
+        date_search_field.removeAllItems();
+        while (rslt.next()) {
 
+            date_search_field.addItem(rslt.getString("date"));
+
+        }
+        rslt.close();
+
+    }
    
 public void date_set() {
         Date d = new Date();
@@ -69,7 +94,7 @@ public void date_set() {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        montant = new javax.swing.JTextField();
+        montant_field = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         libele_field = new javax.swing.JTextField();
         heure_field = new javax.swing.JLabel();
@@ -83,6 +108,8 @@ public void date_set() {
         jScrollPane1 = new javax.swing.JScrollPane();
         table_depense = new javax.swing.JTable();
         chercher = new javax.swing.JButton();
+        total_lbl = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -109,8 +136,18 @@ public void date_set() {
         date_search_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         add_btn.setText("Ajouter");
+        add_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                add_btnActionPerformed(evt);
+            }
+        });
 
         modifier_btn.setText("Modifier");
+        modifier_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modifier_btnActionPerformed(evt);
+            }
+        });
 
         supprimer_btn.setText("Supprimer");
 
@@ -126,7 +163,7 @@ public void date_set() {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(montant, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(montant_field, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -182,7 +219,7 @@ public void date_set() {
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(montant, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(montant_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap())))
         );
@@ -195,43 +232,160 @@ public void date_set() {
 
         table_depense.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Id", "Date", "Montant ", "Cumul"
+                "Id", "Libele", "Date", "Montant ", "Cumul"
             }
         ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Float.class, java.lang.Float.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        table_depense.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_depenseMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(table_depense);
 
         jPanel2.add(jScrollPane1);
-        jScrollPane1.setBounds(10, 60, 700, 180);
+        jScrollPane1.setBounds(10, 60, 700, 120);
 
         chercher.setText("Chercher");
+        chercher.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chercherActionPerformed(evt);
+            }
+        });
         jPanel2.add(chercher);
         chercher.setBounds(690, 20, 110, 29);
+
+        total_lbl.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        total_lbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        total_lbl.setText("0");
+        jPanel2.add(total_lbl);
+        total_lbl.setBounds(520, 200, 270, 40);
+
+        jLabel6.setText("Total");
+        jPanel2.add(jLabel6);
+        jLabel6.setBounds(410, 210, 90, 20);
 
         getContentPane().add(jPanel2);
         jPanel2.setBounds(0, 243, 880, 290);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void add_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_btnActionPerformed
+        // TODO add your handling code here:
+        if (libele_field.getText().equals("")|| montant_field.getText().equals("")){
+             JOptionPane.showMessageDialog(this,"veuillez renseigner tous les champs");
+        
+        }else {
+            if(JOptionPane.showConfirmDialog(this,"êtes-vous Sûr d'avoir depenser cet argent","warning",JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+                try {
+                     String[] colonne ={"libele","montant"};
+                    String[] donne={libele_field.getText(),montant_field.getText()};
+                    base_donne.InsererParColns("depenses", colonne, donne);
+                    afficherTable();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                 
+                
+        
+        }else{
+        return;
+        }
+        
+        
+        
+        
+        
+        }
+        
+        
+    }//GEN-LAST:event_add_btnActionPerformed
+
+    String date=null;
+    
+    
+    private void modifier_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifier_btnActionPerformed
+        // TODO add your handling code here:
+        if (libele_field.getText().equals("")|| montant_field.getText().equals("")){
+             JOptionPane.showMessageDialog(this,"veuillez renseigner tous les champs");
+               }else{
+                if(JOptionPane.showConfirmDialog(this,"êtes-vous Sûr d'avoir depenser cet argent","warning",JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+                    String[] colonne ={"libele","montant","date"};
+                    String[] donne={libele_field.getText(),montant_field.getText(),date};
+                    String id= String.valueOf(table_depense.getValueAt(table_depense.getSelectedRow(),0));
+                    base_donne.updateDonneTable("depenses", colonne,donne,"id='"+id+"'");
+                    try {
+                        afficherTable();
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                 
+             
+        
+        
+        }}
+    }//GEN-LAST:event_modifier_btnActionPerformed
+
+    private void table_depenseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_depenseMouseClicked
+        // TODO add your handling code here:
+        
+        libele_field.setText(String.valueOf(table_depense.getValueAt(table_depense.getSelectedRow(),1)));
+        montant_field.setText(String.valueOf(table_depense.getValueAt(table_depense.getSelectedRow(),3)));
+        date=String.valueOf(table_depense.getValueAt(table_depense.getSelectedRow(),2));
+        
+    }//GEN-LAST:event_table_depenseMouseClicked
+
+    private void chercherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chercherActionPerformed
+        try {
+            // TODO add your handling code here:
+            rslt = base_donne.RecupererDonne("SELECT id, libele,date, montant,\n" +
+                    "       @cumul := @cumul + montant AS cumul\n" +
+                    "FROM depenses, (SELECT @cumul := 0) c\n" +
+                    " WHERE date LIKE '%"+date_search_field.getSelectedItem().toString()+"%' ORDER BY date");
+               table_depense.setModel(new ResultSetTableModel(rslt));
+    total_table();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    
+    // Créer un modèle de tableau avec le ResultSet
+    
+    // Définir le modèle de tableau sur le composant table_user
+    table_depense.setModel(new ResultSetTableModel(rslt));
+    total_table();
+        
+        
+    }//GEN-LAST:event_chercherActionPerformed
 
     /**
      * @param args the command line arguments
@@ -281,13 +435,15 @@ public void date_set() {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField libele_field;
     private javax.swing.JButton modifier_btn;
-    private javax.swing.JTextField montant;
+    private javax.swing.JTextField montant_field;
     private javax.swing.JButton supprimer_btn;
     private javax.swing.JTable table_depense;
+    private javax.swing.JLabel total_lbl;
     // End of variables declaration//GEN-END:variables
 }
