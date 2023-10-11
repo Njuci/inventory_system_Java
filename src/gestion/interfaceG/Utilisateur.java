@@ -20,7 +20,7 @@ public class Utilisateur extends javax.swing.JFrame {
     public Utilisateur() throws SQLException, ClassNotFoundException {
         base_donne=new BDD();
         initComponents();
-        this.setSize(1000, 600);
+        this.setBounds(400, 300, 950, 550);
         this.setResizable(false);
         base_donne.ouvrirLaConnexion();
         afficherTable();
@@ -55,25 +55,27 @@ public class Utilisateur extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_user = new javax.swing.JTable();
-        recherche_Btn = new javax.swing.JButton();
-        SupprimerBtn = new javax.swing.JButton();
-        Modifierbtn = new javax.swing.JButton();
         Ajouterbtn = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        type_field = new javax.swing.JComboBox<>();
-        password_field = new javax.swing.JTextField();
-        id_user_field = new javax.swing.JTextField();
-        username_field = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        search_field = new javax.swing.JTextField();
+        Modifierbtn = new javax.swing.JButton();
+        SupprimerBtn = new javax.swing.JButton();
         ActualiserBtn = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        id_user_field = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        username_field = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        password_field = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
         recherche_cmbx = new javax.swing.JComboBox<>();
+        search_field = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        recherche_Btn = new javax.swing.JButton();
+        type_field = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -81,13 +83,17 @@ public class Utilisateur extends javax.swing.JFrame {
                 formWindowOpened(evt);
             }
         });
-        getContentPane().setLayout(null);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel2.setBackground(java.awt.Color.orange);
+        jPanel2.setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 3, 48)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Utilisateur");
-        getContentPane().add(jLabel1);
-        jLabel1.setBounds(106, 16, 678, 57);
+        jPanel2.add(jLabel1);
+        jLabel1.setBounds(90, 10, 678, 57);
 
         table_user.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -124,35 +130,8 @@ public class Utilisateur extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(table_user);
 
-        getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(15, 82, 911, 138);
-
-        recherche_Btn.setText("Lancer la recherche");
-        recherche_Btn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                recherche_BtnActionPerformed(evt);
-            }
-        });
-        getContentPane().add(recherche_Btn);
-        recherche_Btn.setBounds(510, 460, 180, 50);
-
-        SupprimerBtn.setText("Supprimer");
-        SupprimerBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SupprimerBtnActionPerformed(evt);
-            }
-        });
-        getContentPane().add(SupprimerBtn);
-        SupprimerBtn.setBounds(490, 290, 200, 50);
-
-        Modifierbtn.setText("Modifier");
-        Modifierbtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ModifierbtnActionPerformed(evt);
-            }
-        });
-        getContentPane().add(Modifierbtn);
-        Modifierbtn.setBounds(260, 290, 200, 50);
+        jPanel2.add(jScrollPane1);
+        jScrollPane1.setBounds(20, 80, 911, 138);
 
         Ajouterbtn.setText("Ajouter");
         Ajouterbtn.addActionListener(new java.awt.event.ActionListener() {
@@ -160,54 +139,26 @@ public class Utilisateur extends javax.swing.JFrame {
                 AjouterbtnActionPerformed(evt);
             }
         });
-        getContentPane().add(Ajouterbtn);
-        Ajouterbtn.setBounds(20, 290, 200, 50);
+        jPanel2.add(Ajouterbtn);
+        Ajouterbtn.setBounds(20, 220, 200, 50);
 
-        jLabel2.setText("Type");
-        getContentPane().add(jLabel2);
-        jLabel2.setBounds(20, 490, 100, 30);
-
-        jLabel3.setText("Id_user");
-        getContentPane().add(jLabel3);
-        jLabel3.setBounds(20, 370, 100, 30);
-
-        jLabel4.setText("Username");
-        getContentPane().add(jLabel4);
-        jLabel4.setBounds(20, 410, 100, 30);
-
-        jLabel5.setText("Password");
-        getContentPane().add(jLabel5);
-        jLabel5.setBounds(20, 450, 100, 30);
-
-        type_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "directeur", "agent" }));
-        getContentPane().add(type_field);
-        type_field.setBounds(100, 490, 110, 26);
-        getContentPane().add(password_field);
-        password_field.setBounds(110, 450, 84, 26);
-
-        id_user_field.addActionListener(new java.awt.event.ActionListener() {
+        Modifierbtn.setText("Modifier");
+        Modifierbtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                id_user_fieldActionPerformed(evt);
+                ModifierbtnActionPerformed(evt);
             }
         });
-        getContentPane().add(id_user_field);
-        id_user_field.setBounds(110, 370, 84, 26);
-        getContentPane().add(username_field);
-        username_field.setBounds(110, 410, 84, 26);
+        jPanel2.add(Modifierbtn);
+        Modifierbtn.setBounds(230, 220, 200, 50);
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Rechercher par");
-        getContentPane().add(jLabel6);
-        jLabel6.setBounds(510, 400, 150, 30);
-
-        search_field.addActionListener(new java.awt.event.ActionListener() {
+        SupprimerBtn.setText("Supprimer");
+        SupprimerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                search_fieldActionPerformed(evt);
+                SupprimerBtnActionPerformed(evt);
             }
         });
-        getContentPane().add(search_field);
-        search_field.setBounds(710, 470, 150, 26);
+        jPanel2.add(SupprimerBtn);
+        SupprimerBtn.setBounds(470, 220, 200, 50);
 
         ActualiserBtn.setText("Actualiser");
         ActualiserBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -215,12 +166,85 @@ public class Utilisateur extends javax.swing.JFrame {
                 ActualiserBtnActionPerformed(evt);
             }
         });
-        getContentPane().add(ActualiserBtn);
-        ActualiserBtn.setBounds(720, 290, 200, 50);
+        jPanel2.add(ActualiserBtn);
+        ActualiserBtn.setBounds(710, 220, 200, 50);
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 950, 280));
+
+        jPanel1.setBackground(new java.awt.Color(51, 204, 255));
+        jPanel1.setLayout(null);
+
+        jLabel3.setText("Id_user");
+        jPanel1.add(jLabel3);
+        jLabel3.setBounds(30, 20, 100, 30);
+
+        id_user_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                id_user_fieldActionPerformed(evt);
+            }
+        });
+        jPanel1.add(id_user_field);
+        id_user_field.setBounds(130, 20, 84, 26);
+
+        jLabel4.setText("Username");
+        jPanel1.add(jLabel4);
+        jLabel4.setBounds(30, 70, 80, 30);
+        jPanel1.add(username_field);
+        username_field.setBounds(130, 70, 84, 26);
+
+        jLabel5.setText("Password");
+        jPanel1.add(jLabel5);
+        jLabel5.setBounds(20, 120, 100, 30);
+
+        password_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                password_fieldActionPerformed(evt);
+            }
+        });
+        jPanel1.add(password_field);
+        password_field.setBounds(130, 110, 84, 26);
+
+        jLabel2.setText("Type");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(20, 160, 100, 30);
 
         recherche_cmbx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "id_user", "username", "type" }));
-        getContentPane().add(recherche_cmbx);
-        recherche_cmbx.setBounds(700, 400, 140, 26);
+        jPanel1.add(recherche_cmbx);
+        recherche_cmbx.setBounds(760, 30, 150, 26);
+
+        search_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                search_fieldActionPerformed(evt);
+            }
+        });
+        jPanel1.add(search_field);
+        search_field.setBounds(770, 110, 150, 26);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Rechercher par");
+        jPanel1.add(jLabel6);
+        jLabel6.setBounds(570, 30, 150, 30);
+
+        recherche_Btn.setText("Lancer la recherche");
+        recherche_Btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                recherche_BtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(recherche_Btn);
+        recherche_Btn.setBounds(560, 90, 180, 50);
+
+        type_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "directeur", "agent" }));
+        type_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                type_fieldActionPerformed(evt);
+            }
+        });
+        jPanel1.add(type_field);
+        type_field.setBounds(130, 160, 90, 26);
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 280, 950, 420));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -391,6 +415,14 @@ public class Utilisateur extends javax.swing.JFrame {
         
     }//GEN-LAST:event_table_userMouseClicked
 
+    private void password_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_password_fieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_password_fieldActionPerformed
+
+    private void type_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_type_fieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_type_fieldActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -444,6 +476,8 @@ public class Utilisateur extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField password_field;
     private javax.swing.JButton recherche_Btn;

@@ -73,6 +73,7 @@ public class BDD {
 
         try {
             Statement access;
+                  System.out.println(query);
             access = connexion.createStatement();
             rslt=access.executeQuery(query);
 
