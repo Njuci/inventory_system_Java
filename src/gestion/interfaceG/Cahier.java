@@ -32,14 +32,14 @@ public class Cahier extends javax.swing.JFrame {
 
         afficherTableProd();
         afficherTableVente();
-        combox_remplissage();
-
+        
+        this.setVisible(true);
         this.setResizable(false);
     }
 
     public void afficherTableProd() throws ClassNotFoundException, SQLException {
         String[] colonnes = {"id", "code_produit", "ref", "designation", "fournisseur", "remise", "prix_unitaire", "stock"};
-
+        
         // Récupérer le ResultSet à partir de votre méthode RecupererDonneTableFiltrePar()
         ResultSet resultSet = base_donne.RecupererDonneTableFiltrePar(colonnes, "produit");
 
@@ -64,6 +64,7 @@ public class Cahier extends javax.swing.JFrame {
     }
 
     public void afficherTableVente() throws ClassNotFoundException, SQLException {
+        combox_remplissage();
         String[] colonnes = {"id", "num_facture", "code_produit", "ref", "prix_vente", "stock_sortie", "sous_total", "date_vente"};
 
         ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "vente", "num_facture ='" + search_field.getSelectedItem().toString() + "'");
@@ -259,6 +260,7 @@ public class Cahier extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(table_prod);
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         jLabel1.setText("Cahier");
         jLabel1.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 1, 0, new java.awt.Color(0, 0, 0)));
 
@@ -277,23 +279,24 @@ public class Cahier extends javax.swing.JFrame {
                         .addComponent(jScrollPane1)
                         .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
                         .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(72, 72, 72)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 377, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24))))
+                        .addGap(37, 37, 37))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap(45, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                    .addComponent(heure_field, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35))
         );
@@ -451,13 +454,13 @@ public class Cahier extends javax.swing.JFrame {
                     .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
                     .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -621,7 +624,7 @@ public class Cahier extends javax.swing.JFrame {
                     .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(valider_vente, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -703,7 +706,7 @@ public class Cahier extends javax.swing.JFrame {
                 try {
                     if (getStock() == true) {
                         total_vente();
-                        String[] colonnes = {"code_produit", "num_facture", "ref", "stock_sortie", "prix_vente", "sous_total", "date"};
+                        String[] colonnes = {"code_produit", "num_facture", "ref", "stock_sortie", "prix_vente", "sous_total", "date_vente"};
                         rslt = base_donne.RecupererDonne("SELECT date FROM facture WHERE fac_num ='" + search_field.getSelectedItem().toString() + "'");
                         String date = null;
                         while (rslt.next()) {
@@ -713,9 +716,15 @@ public class Cahier extends javax.swing.JFrame {
                         
                         String[] donne = {code_prod_field1.getText(), search_field.getSelectedItem().toString(),
                             ref_field.getText(), stock_field.getText(), nouveau_prix_unit_field1.getText(), sous_total_facture.getText(), date};
+                        System.out.println(donne +" "+colonnes );
+                        
                         base_donne.InsererParColns("vente", colonnes, donne);
-                        
-                        
+                          afficherTableVente();
+                          total_facture();
+                          update_stock();
+                          afficherTableVente();
+                        total_facture();
+            
                     } else {
                         JOptionPane.showMessageDialog(this, "Quantité invalide");
                     }
@@ -726,31 +735,19 @@ public class Cahier extends javax.swing.JFrame {
                 }
                 
             }
-            try {
-                update_stock();
+            
+             afficherTableProd();
+            
+               
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SQLException ex) {
                 Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
             }
-            try {
-                afficherTableProd();
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-                Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            afficherTableVente();
-            total_facture();
+        
             
             
-            
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        
 
 
     }//GEN-LAST:event_valider_venteActionPerformed
@@ -880,7 +877,7 @@ public class Cahier extends javax.swing.JFrame {
 
     private void stock_fieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_stock_fieldKeyReleased
         // TODO add your handling code here:
-        total_vente();
+       
 
 
     }//GEN-LAST:event_stock_fieldKeyReleased

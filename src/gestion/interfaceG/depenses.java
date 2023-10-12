@@ -28,12 +28,13 @@ public class depenses extends javax.swing.JFrame {
     
     public depenses() throws ClassNotFoundException, SQLException {
         initComponents();
-        this.setBounds(200, 300, 880, 550);
+        this.setBounds(200, 300, 920, 550);
         base_donne=new BDD();
         this.setResizable(false);
        
         date_set();
        combox_remplissage();
+       combox_mois_remplissage();
         afficherTable();
         
         
@@ -72,6 +73,16 @@ public class depenses extends javax.swing.JFrame {
         rslt.close();
 
     }
+   public void combox_mois_remplissage() throws SQLException, ClassNotFoundException {
+        rslt = base_donne.RecupererDonne("SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') AS mois_annee FROM depenses order by -id");
+        moi_field.removeAllItems();
+        while (rslt.next()) {
+           moi_field.addItem(rslt.getString("mois_annee"));
+
+        }
+        rslt.close();
+
+    }
    
 public void date_set() {
         Date d = new Date();
@@ -91,6 +102,8 @@ public void date_set() {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -104,12 +117,28 @@ public void date_set() {
         add_btn = new javax.swing.JButton();
         modifier_btn = new javax.swing.JButton();
         supprimer_btn = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_depense = new javax.swing.JTable();
         chercher = new javax.swing.JButton();
         total_lbl = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        moi_field = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu2 = new javax.swing.JMenu();
+        vendre_e = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        Retour = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+
+        jMenu1.setText("jMenu1");
+
+        jMenuItem2.setText("jMenuItem2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -150,6 +179,14 @@ public void date_set() {
         });
 
         supprimer_btn.setText("Supprimer");
+        supprimer_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                supprimer_btnActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel4.setText("Journée du");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -158,7 +195,7 @@ public void date_set() {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 49, Short.MAX_VALUE)
+                        .addGap(0, 89, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -176,43 +213,45 @@ public void date_set() {
                         .addComponent(modifier_btn)
                         .addGap(72, 72, 72)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(99, 99, 99))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(supprimer_btn)
-                                .addGap(148, 148, 148)))
+                        .addComponent(supprimer_btn)
+                        .addGap(43, 43, 43)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25)
+                        .addComponent(date_search_field, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(76, 76, 76))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(date_search_field, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                            .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(86, 86, 86))))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(258, 258, 258)
+                .addGap(259, 259, 259)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(33, 33, 33)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(48, 48, 48)
+                .addGap(31, 31, 31)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(date_field, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(date_search_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(add_btn)
                             .addComponent(modifier_btn)
-                            .addComponent(supprimer_btn)))
+                            .addComponent(supprimer_btn)
+                            .addComponent(jLabel4)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(libele_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -225,7 +264,7 @@ public void date_set() {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 880, 242);
+        jPanel1.setBounds(0, 0, 920, 242);
 
         jPanel2.setBackground(new java.awt.Color(51, 204, 255));
         jPanel2.setLayout(null);
@@ -265,7 +304,7 @@ public void date_set() {
         jScrollPane1.setViewportView(table_depense);
 
         jPanel2.add(jScrollPane1);
-        jScrollPane1.setBounds(10, 60, 700, 120);
+        jScrollPane1.setBounds(10, 80, 700, 120);
 
         chercher.setText("Chercher");
         chercher.addActionListener(new java.awt.event.ActionListener() {
@@ -274,20 +313,74 @@ public void date_set() {
             }
         });
         jPanel2.add(chercher);
-        chercher.setBounds(690, 20, 110, 29);
+        chercher.setBounds(740, 0, 110, 29);
 
         total_lbl.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         total_lbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         total_lbl.setText("0");
         jPanel2.add(total_lbl);
-        total_lbl.setBounds(520, 200, 270, 40);
+        total_lbl.setBounds(450, 200, 270, 40);
 
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Total");
         jPanel2.add(jLabel6);
-        jLabel6.setBounds(410, 210, 90, 20);
+        jLabel6.setBounds(340, 210, 90, 22);
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel7.setText("Par mois");
+        jPanel2.add(jLabel7);
+        jLabel7.setBounds(650, 40, 70, 30);
+
+        moi_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel2.add(moi_field);
+        moi_field.setBounds(740, 40, 110, 26);
+
+        jButton1.setText("Rechercher");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton1);
+        jButton1.setBounds(740, 80, 120, 29);
 
         getContentPane().add(jPanel2);
-        jPanel2.setBounds(0, 243, 880, 290);
+        jPanel2.setBounds(0, 243, 920, 340);
+
+        jMenuBar1.setBackground(java.awt.Color.orange);
+
+        jMenu2.setText("Menu");
+
+        vendre_e.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
+        vendre_e.setText("Vendre");
+        vendre_e.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                vendre_eActionPerformed(evt);
+            }
+        });
+        jMenu2.add(vendre_e);
+
+        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem5.setText("Voir le bilan");
+        jMenu2.add(jMenuItem5);
+
+        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem4.setText("Voir les vendeurs");
+        jMenu2.add(jMenuItem4);
+
+        jMenuItem6.setText("Voir");
+        jMenu2.add(jMenuItem6);
+
+        Retour.setText("Retour");
+        jMenu2.add(Retour);
+
+        jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Quiter");
+        jMenuBar1.add(jMenu3);
+
+        setJMenuBar(jMenuBar1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -387,6 +480,73 @@ public void date_set() {
         
     }//GEN-LAST:event_chercherActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+            try {
+            // TODO add your handling code here:
+            rslt = base_donne.RecupererDonne("SELECT id, libele,date, montant,\n" +
+                    "       @cumul := @cumul + montant AS cumul\n" +
+                    "FROM depenses, (SELECT @cumul := 0) c\n" +
+                    " WHERE date LIKE '%"+moi_field.getSelectedItem().toString()+"%' ORDER BY date");
+               table_depense.setModel(new ResultSetTableModel(rslt));
+    total_table();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    
+    // Créer un modèle de tableau avec le ResultSet
+    
+    // Définir le modèle de tableau sur le composant table_user
+    table_depense.setModel(new ResultSetTableModel(rslt));
+        
+    total_table();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void supprimer_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimer_btnActionPerformed
+        // TODO add your handling code here:
+        String id= String.valueOf(table_depense.getValueAt(table_depense.getSelectedRow(),0));
+        if(JOptionPane.showConfirmDialog(this,"êtes-vous Sûr de supprimer","warning",JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+            try {
+                base_donne.Delete("depenses","id ='"+id+"'");
+                afficherTable();
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                
+        
+        }else{
+        return;
+        }
+        try {
+                
+                
+                afficherTable();
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Utilisateur.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(Utilisateur.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        
+    }//GEN-LAST:event_supprimer_btnActionPerformed
+
+    private void vendre_eActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vendre_eActionPerformed
+        try {
+            // TODO add your handling code here:
+            Cahier e=new Cahier();
+        } catch (SQLException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_vendre_eActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -426,24 +586,38 @@ public void date_set() {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem Retour;
     private javax.swing.JButton add_btn;
     private javax.swing.JButton chercher;
     private javax.swing.JLabel date_field;
     private javax.swing.JComboBox<String> date_search_field;
     private javax.swing.JLabel heure_field;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField libele_field;
     private javax.swing.JButton modifier_btn;
+    private javax.swing.JComboBox<String> moi_field;
     private javax.swing.JTextField montant_field;
     private javax.swing.JButton supprimer_btn;
     private javax.swing.JTable table_depense;
     private javax.swing.JLabel total_lbl;
+    private javax.swing.JMenuItem vendre_e;
     // End of variables declaration//GEN-END:variables
 }
