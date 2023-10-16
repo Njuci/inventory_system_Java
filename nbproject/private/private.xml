@@ -5,8 +5,10 @@
         <group>
             <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/BDD.java</file>
             <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/DIG.java</file>
+            <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/Bilan.java</file>
             <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/login.java</file>
             <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/Utilisateur.java</file>
+            <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/depenses.java</file>
             <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/Produit.java</file>
             <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Gestion%20Stock/src/gestion/interfaceG/Cahier.java</file>
         </group>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ca54f2eb-8786-4649-bd22-fe96afb40dae">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="total_facture" class="java.lang.String"/>
+	<parameter name="item_invoice" class="java.lang.String"/>
+	<parameter name="num_fac" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     produit.`id` AS produit_id,
+     produit.`code_produit` AS produit_code_produit,
+     produit.`ref` AS produit_ref,
+     produit.`designation` AS produit_designation,
+     produit.`fournisseur` AS produit_fournisseur,
+     produit.`remise` AS produit_remise,
+     produit.`prix_unitaire` AS produit_prix_unitaire,
+     produit.`devise` AS produit_devise,
+     produit.`stock` AS produit_stock,
+     produit.`unite_mesure` AS produit_unite_mesure,
+     produit.`date` AS produit_date
+FROM
+     `produit` produit]]>
+	</queryString>
+	<field name="produit_id" class="java.lang.Integer"/>
+	<field name="produit_code_produit" class="java.lang.String"/>
+	<field name="produit_ref" class="java.lang.String"/>
+	<field name="produit_designation" class="java.lang.String"/>
+	<field name="produit_fournisseur" class="java.lang.String"/>
+	<field name="produit_remise" class="java.lang.Integer"/>
+	<field name="produit_prix_unitaire" class="java.lang.Integer"/>
+	<field name="produit_devise" class="java.lang.String"/>
+	<field name="produit_stock" class="java.lang.Integer"/>
+	<field name="produit_unite_mesure" class="java.lang.String"/>
+	<field name="produit_date" class="java.sql.Date"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="101" splitType="Stretch">
+			<image>
+				<reportElement x="13" y="13" width="106" height="50" uuid="eec141b5-5f1b-48e4-904e-d33142d91af3"/>
+				<imageExpression><![CDATA["C:\\Users\\Administrator\\Desktop\\archange.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="192" y="0" width="152" height="63" uuid="103fcbbb-0d43-44d1-b94b-3ec6a8997935"/>
+				<textElement>
+					<font size="36" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Facture]]></text>
+			</staticText>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="365" y="13" width="162" height="37" uuid="07e8e732-36c1-48ca-88d3-e26b086d5034"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="67" width="100" height="20" uuid="dc4394f3-e923-4858-a9a1-a96152856fad"/>
+				<textElement>
+					<font size="14" isBold="true" isItalic="true" isUnderline="true" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{num_fac}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="189" y="67" width="100" height="20" uuid="9cda6b15-a294-4676-997b-d2c04f2686f8"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Fac ID]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="105" splitType="Stretch">
+			<textField>
+				<reportElement x="215" y="19" width="100" height="20" uuid="e7b10aa8-db44-4284-b8f2-4e2160eaa624"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{item_invoice}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="394" y="75" width="133" height="20" uuid="84ac121e-2060-4254-bf30-045a812a43ab"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{total_facture}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="265" y="75" width="100" height="20" uuid="8b621153-0282-47c3-91a0-91ad67d57448"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="430" y="7" width="80" height="20" uuid="9404259a-6b79-48ab-9094-697ca930bac7"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="510" y="7" width="40" height="20" uuid="e3063ac4-2af8-408e-b3ad-20ee46b05673"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

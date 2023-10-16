@@ -119,7 +119,7 @@ public class DIG extends javax.swing.JFrame {
 
         jButton4.setBackground(java.awt.Color.lightGray);
         jButton4.setFont(new java.awt.Font("Tahoma", 3, 48)); // NOI18N
-        jButton4.setText("Retour");
+        jButton4.setText("Bilan");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -215,7 +215,14 @@ public class DIG extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        login lg= new login();
+        Bilan lg=null;
+        try {
+            lg = new Bilan();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DIG.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DIG.class.getName()).log(Level.SEVERE, null, ex);
+        }
         lg.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed

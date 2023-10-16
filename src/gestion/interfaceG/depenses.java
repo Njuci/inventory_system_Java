@@ -333,6 +333,11 @@ public void date_set() {
         jLabel7.setBounds(650, 40, 70, 30);
 
         moi_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        moi_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moi_fieldActionPerformed(evt);
+            }
+        });
         jPanel2.add(moi_field);
         moi_field.setBounds(740, 40, 110, 26);
 
@@ -546,6 +551,10 @@ public void date_set() {
             Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_vendre_eActionPerformed
+
+    private void moi_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moi_fieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_moi_fieldActionPerformed
 
     /**
      * @param args the command line arguments

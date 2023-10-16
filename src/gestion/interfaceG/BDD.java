@@ -29,7 +29,7 @@ public class BDD {
 
     private Connection connexion=null;
     public Connection ouvrirLaConnexion()  throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
+       
         connexion= DriverManager.getConnection(this.URL+database,userName,pwd);
         return connexion;
     }
@@ -55,7 +55,7 @@ public class BDD {
 
     public Connection ConnectDB(){
         try{
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        
             connexion=DriverManager.getConnection(this.URL+database,userName,pwd);
             System.out.println("mec");
 
