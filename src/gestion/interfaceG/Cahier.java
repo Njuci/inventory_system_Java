@@ -17,11 +17,15 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import net.sf.jasperreports.view.JasperViewer;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  *
@@ -725,13 +729,27 @@ public class Cahier extends javax.swing.JFrame {
         // TODO add your handling code here:
 Map params = new HashMap();
 JRDataSource dataSource = new JRTableModelDataSource(table_vente.getModel());
-JasperPrint print=null;
+params.put("item_invoice", dataSource);// Compiler le rapport Jasper
+JasperReport report=null;
+String reportPath = "C:/Users/Administrator/Documents/NetBeansProjects/Gestion Stock/src/gestion/interfaceG/facture.jrxml";
+String log4jConfPath = "C:/Users/Administrator/Documents/NetBeansProjects/Gestion Stock/src/gestion/interfaceG/log4j.properties";
+PropertyConfigurator.configure(log4jConfPath);
         try {
-            print = JasperFillManager.fillReport("pathToYourReport.jasper", params, dataSource);
+            report = JasperCompileManager.compileReport(reportPath);
         } catch (JRException ex) {
             Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
         }
-JasperViewer.viewReport(print, true); // true == Exit on Close
+
+// Remplir le rapport Jasper avec les données et les paramètres
+JasperPrint print=null;
+        try {
+            print = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+        } catch (JRException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+// Afficher le rapport Jasper dans une fenêtre
+JasperViewer.viewReport(print); // true == Exit on Close
         
     }//GEN-LAST:event_imprimerActionPerformed
 

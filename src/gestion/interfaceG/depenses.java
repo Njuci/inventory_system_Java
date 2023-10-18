@@ -4,8 +4,20 @@
  * and open the template in the editor.
  */
 package gestion.interfaceG;
-
+  import org.apache.logging.log4j.LogManager;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 import gestion.stock.ResultSetTableModel;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -13,6 +25,14 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import javax.swing.JFrame;
 
 /**
  *
@@ -28,7 +48,7 @@ public class depenses extends javax.swing.JFrame {
     
     public depenses() throws ClassNotFoundException, SQLException {
         initComponents();
-        this.setBounds(200, 300, 920, 550);
+        this.setBounds(200, 300, 920, 580);
         base_donne=new BDD();
         this.setResizable(false);
        
@@ -46,12 +66,30 @@ public class depenses extends javax.swing.JFrame {
     
     
     }
+    public void impression(){
+        File folder=new File ("infor_gestion/bilan");
+        if (!folder.exists()){
+        folder.mkdir();
+        }
+        Date d1=new Date();
+        String nom_fichier="/*infor_gestion/bilan/Bilan_du_"+d1.toString()+".pdf";
+        Font fontTitre;
+        fontTitre = new Font(Font.FontFamily.TIMES_ROMAN,16,Font.BOLD,BaseColor.BLUE);
+        
+        Font Invoice_font=new Font(Font.FontFamily.TIMES_ROMAN,14,Font.BOLD,BaseColor.BLUE);
+        LineSeparator ls =new LineSeparator();
+        ls.setLineColor(BaseColor.WHITE);
+        
+        
+        
+    
+    }
     
     
     
     public void afficherTable() throws ClassNotFoundException, SQLException {
     String[] colonnes = {"id","code_produit","ref","designation","fournisseur","remise","prix_unitaire","stock","date"};
-    rslt = base_donne.RecupererDonne("SELECT id, libele,date, montant,\n" +
+    rslt = base_donne.RecupererDonne("SELECT id, libele,DATE_FORMAT(date, '%Y-%m-%d')As date , montant,\n" +
 "       @cumul := @cumul + montant AS cumul\n" +
 "FROM depenses, (SELECT @cumul := 0) c\n" +
 "ORDER BY date");
@@ -127,6 +165,7 @@ public void date_set() {
         jLabel7 = new javax.swing.JLabel();
         moi_field = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
+        imprimer = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         vendre_e = new javax.swing.JMenuItem();
@@ -350,6 +389,15 @@ public void date_set() {
         jPanel2.add(jButton1);
         jButton1.setBounds(740, 80, 120, 29);
 
+        imprimer.setText("Imprimer");
+        imprimer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                imprimerActionPerformed(evt);
+            }
+        });
+        jPanel2.add(imprimer);
+        imprimer.setBounds(20, 220, 130, 50);
+
         getContentPane().add(jPanel2);
         jPanel2.setBounds(0, 243, 920, 340);
 
@@ -489,7 +537,7 @@ public void date_set() {
         // TODO add your handling code here:
             try {
             // TODO add your handling code here:
-            rslt = base_donne.RecupererDonne("SELECT id, libele,date, montant,\n" +
+            rslt = base_donne.RecupererDonne("SELECT id, libele,DATE_FORMAT(date, '%Y-%m-%d')As date , montant,\n" +
                     "       @cumul := @cumul + montant AS cumul\n" +
                     "FROM depenses, (SELECT @cumul := 0) c\n" +
                     " WHERE date LIKE '%"+moi_field.getSelectedItem().toString()+"%' ORDER BY date");
@@ -555,6 +603,63 @@ public void date_set() {
     private void moi_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moi_fieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_moi_fieldActionPerformed
+ public static void previewPDF(String filename) throws Exception {
+         
+ lecteurPDF lecteur = new lecteurPDF(filename);
+ //créer le JFrame
+ JFrame f = new JFrame("Lecteur PDF");
+ f.setSize(1024,768);
+ f.setLocationRelativeTo(null);
+ f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ f.setVisible(true);
+ f.getContentPane().add(lecteur);
+    }
+    private void imprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imprimerActionPerformed
+         SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyHHmmss");
+                Date date = new Date();
+                String nom="pdf/table"+s.format(date).toString()+".pdf";
+                
+        try {                                         
+            Document document = new Document();
+            
+            try {
+                System.out.println(nom);
+                try {
+                    PdfWriter.getInstance(document, new FileOutputStream(nom));
+                } catch (DocumentException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            document.open();
+            document.addTitle("depense du"+date_field.getText());
+            
+            PdfPTable pdfTable = new PdfPTable(table_depense.getColumnCount());
+            
+// Ajouter les en-têtes de colonne
+for (int i = 0; i < table_depense.getColumnCount(); i++) {
+    pdfTable.addCell(table_depense.getColumnName(i));
+}
+
+// Ajouter les données de la JTable
+for (int rows = 0; rows < table_depense.getRowCount(); rows++) {
+    for (int cols = 0; cols < table_depense.getColumnCount(); cols++) {
+        pdfTable.addCell(table_depense.getModel().getValueAt(rows, cols).toString());
+    }
+}
+
+document.add(pdfTable);
+document.close();
+            try {
+                previewPDF(nom);
+            } catch (Exception ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (DocumentException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_imprimerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -601,6 +706,7 @@ public void date_set() {
     private javax.swing.JLabel date_field;
     private javax.swing.JComboBox<String> date_search_field;
     private javax.swing.JLabel heure_field;
+    private javax.swing.JButton imprimer;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
