@@ -6,6 +6,7 @@
 package gestion.interfaceG;
 
 import gestion.stock.ResultSetTableModel;
+import java.awt.print.PrinterException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
@@ -42,19 +44,58 @@ public class Cahier extends javax.swing.JFrame {
         initComponents();
         base_donne.ouvrirLaConnexion();
         // TODO add your handling code here:
-         combox_remplissage();
+        combox_remplissage();
         afficherTableProd();
         afficherTableVente();
-        
+
         this.setVisible(true);
         this.setResizable(false);
     }
 
-    public void afficherTableProd() throws ClassNotFoundException, SQLException {
-        String[] colonnes = {"id", "code_produit", "ref", "designation", "fournisseur", "remise", "prix_unitaire","devise", "stock","unite_mesure"};
+    public void bill_print() {
+
+       
+            bill.setText("                             The Njuci'son                      \tDate : "+ date_field.getText()+"\n");
+            bill.setText(bill.getText() + "             \t17/ Athnee1, \n");
+            bill.setText(bill.getText() + "        \tBukavu, DRC, \n");
+            bill.setText(bill.getText() + "          \t+243 971595494, \n");
+            bill.setText(bill.getText() + " \n");
+           bill.setText(bill.getText() +search_field.getSelectedItem().toString()+ " \n");
+            bill.setText(bill.getText() + " \n");
+            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------\n");
+            bill.setText(bill.getText() + " Code \tref \tPrice \tQty \tSous-total \n");
+            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------\n");
+
+            for (int i = 0; i < table_vente.getRowCount(); i++) {
+
+                String code_produit = table_vente.getValueAt(i, 0).toString();
+                String reference = table_vente.getValueAt(i, 1).toString();
+                String prc = table_vente.getValueAt(i, 2).toString();
+                String stv = table_vente.getValueAt(i, 3).toString();
+                String subtol = table_vente.getValueAt(i, 4).toString();
+
+                bill.setText(bill.getText() + code_produit + "\t" + reference + "\t" + prc + "\t" + stv + "\t" + subtol + "\n");
+
+            }
+            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------\n");
+            bill.setText(bill.getText() + "SubTotal :\t" + total_facture.getText() + "\n");
+            bill.setText(bill.getText() + "Cash :\t" + "0" + "\n");
+            bill.setText(bill.getText() + "Ballance :\t" + total_facture.getText() + "\n");
+            bill.setText(bill.getText() + "===========================================================\n");
+            bill.setText(bill.getText() + "                     Merci pour votre fidélité...!" + "\n");
+            bill.setText(bill.getText() + "----------------------------------------------------------------\n");
+            bill.setText(bill.getText() + "                     Software by Njuci " + "\n");
+
+            
+
         
+    }
+
+    public void afficherTableProd() throws ClassNotFoundException, SQLException {
+        String[] colonnes = {"id", "code_produit", "ref", "designation", "fournisseur", "remise", "prix_unitaire", "devise", "stock", "unite_mesure"};
+
         // Récupérer le ResultSet à partir de votre méthode RecupererDonneTableFiltrePar()
-        ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "produit","stock >= 1");
+        ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "produit", "stock >= 1");
 
         // Créer un modèle de tableau avec le ResultSet
         ResultSetTableModel tableModel = new ResultSetTableModel(resultSet);
@@ -77,15 +118,13 @@ public class Cahier extends javax.swing.JFrame {
     }
 
     public void afficherTableVente() throws ClassNotFoundException, SQLException {
-       
-        String[] colonnes = { "code_produit", "ref", "prix_vente", "stock_sortie", "sous_total"};
+
+        String[] colonnes = {"code_produit", "ref", "prix_vente", "stock_sortie", "sous_total"};
 
         ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "vente", "num_facture ='" + search_field.getSelectedItem().toString() + "'");
-        String query="SELECT  DATE_FORMAT(date, '%Y-%m-%d')As date FROM facture WHERE fac_num ='" + search_field.getSelectedItem().toString() + "'";
-        
-      
-        
-        rslt=base_donne.RecupererDonne(query);
+        String query = "SELECT  DATE_FORMAT(date, '%Y-%m-%d')As date FROM facture WHERE fac_num ='" + search_field.getSelectedItem().toString() + "'";
+
+        rslt = base_donne.RecupererDonne(query);
         rslt.next();
         date_venrte_field.setText(rslt.getString("date"));
         // Créer un modèle de tableau avec le ResultSet
@@ -93,7 +132,7 @@ public class Cahier extends javax.swing.JFrame {
 
         table_vente.setModel(new ResultSetTableModel(resultSet));
         total_facture();
-           }
+    }
 //
 
     public void update_stock() throws ClassNotFoundException, SQLException {
@@ -114,11 +153,11 @@ public class Cahier extends javax.swing.JFrame {
         afficherTableProd();
     }
 
-    public void update_stock2(int stock_reab,String vente_id) throws ClassNotFoundException, SQLException {
+    public void update_stock2(int stock_reab, String vente_id) throws ClassNotFoundException, SQLException {
 
-        rslt = base_donne.RecupererDonneTableFiltre("produit", "code_produit='" + vente_id+ "'");
+        rslt = base_donne.RecupererDonneTableFiltre("produit", "code_produit='" + vente_id + "'");
         int stock_dispo = 0;
-       
+
         while (rslt.next()) {
             stock_dispo = rslt.getInt("stock");
         }
@@ -223,6 +262,9 @@ public class Cahier extends javax.swing.JFrame {
         search_field = new javax.swing.JComboBox<>();
         supprimer = new javax.swing.JButton();
         date_venrte_field = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        bill = new javax.swing.JTextArea();
+        previsual_facture = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         recherche_cmbx = new javax.swing.JComboBox<>();
@@ -404,6 +446,11 @@ public class Cahier extends javax.swing.JFrame {
         jLabel24.setText("R.P");
 
         search_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        search_field.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                search_fieldItemStateChanged(evt);
+            }
+        });
         search_field.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 search_fieldKeyReleased(evt);
@@ -419,6 +466,17 @@ public class Cahier extends javax.swing.JFrame {
 
         date_venrte_field.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
 
+        bill.setColumns(20);
+        bill.setRows(5);
+        jScrollPane3.setViewportView(bill);
+
+        previsual_facture.setText("Prévisualiser la facture");
+        previsual_facture.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                previsual_factureActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -426,45 +484,49 @@ public class Cahier extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(search_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(57, 57, 57)
+                        .addComponent(lancer)
+                        .addGap(80, 80, 80)
+                        .addComponent(jButton2)
+                        .addGap(40, 40, 40)
+                        .addComponent(supprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(53, 53, 53)
-                                .addComponent(jLabel4)
-                                .addGap(28, 28, 28)
-                                .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(95, 95, 95)
-                                .addComponent(jLabel3)
-                                .addGap(79, 79, 79)
-                                .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(43, 43, 43)
                                 .addComponent(imprimer)
-                                .addGap(182, 182, 182)
+                                .addGap(337, 337, 337)
                                 .addComponent(jButton5))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(search_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(57, 57, 57)
-                                .addComponent(lancer)
-                                .addGap(80, 80, 80)
-                                .addComponent(jButton2)
-                                .addGap(33, 33, 33)
-                                .addComponent(supprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 285, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(160, 160, 160)
-                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(89, 89, 89)
-                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(239, 239, 239)
-                .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(71, 71, 71))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                                    .addGap(10, 10, 10)
+                                    .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(27, 27, 27)
+                                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(previsual_facture)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                            .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                                    .addGap(53, 53, 53)
+                                    .addComponent(jLabel4)
+                                    .addGap(28, 28, 28)
+                                    .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(95, 95, 95)
+                                    .addComponent(jLabel3)
+                                    .addGap(79, 79, 79)
+                                    .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(162, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -477,24 +539,39 @@ public class Cahier extends javax.swing.JFrame {
                     .addComponent(search_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(supprimer))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(19, 19, 19)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4)
-                    .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 118, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(48, 48, 48))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(38, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(26, 26, 26))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                        .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)))))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 128, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(previsual_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(48, 48, 48))))
         );
 
         jPanel4.setBackground(new java.awt.Color(51, 204, 255));
@@ -658,7 +735,7 @@ public class Cahier extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(devise_field))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
                     .addComponent(stock_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -683,8 +760,8 @@ public class Cahier extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -726,31 +803,37 @@ public class Cahier extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void imprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imprimerActionPerformed
-        // TODO add your handling code here:
-Map params = new HashMap();
-JRDataSource dataSource = new JRTableModelDataSource(table_vente.getModel());
-params.put("item_invoice", dataSource);// Compiler le rapport Jasper
-JasperReport report=null;
-String reportPath = "C:/Users/Administrator/Documents/NetBeansProjects/Gestion Stock/src/gestion/interfaceG/facture.jrxml";
-String log4jConfPath = "C:/Users/Administrator/Documents/NetBeansProjects/Gestion Stock/src/gestion/interfaceG/log4j.properties";
-PropertyConfigurator.configure(log4jConfPath);
         try {
+            // TODO add your handling code here:
+            /*Map params = new HashMap();
+            JRDataSource dataSource = new JRTableModelDataSource(table_vente.getModel());
+            params.put("item_invoice", dataSource);// Compiler le rapport Jasper
+            JasperReport report=null;
+            String reportPath = "C:/Users/Administrator/Documents/NetBeansProjects/Gestion Stock/src/gestion/interfaceG/facture.jrxml";
+            String log4jConfPath = "C:/Users/Administrator/Documents/NetBeansProjects/Gestion Stock/src/gestion/interfaceG/log4j.properties";
+            PropertyConfigurator.configure(log4jConfPath);
+            try {
             report = JasperCompileManager.compileReport(reportPath);
-        } catch (JRException ex) {
+            } catch (JRException ex) {
             Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-// Remplir le rapport Jasper avec les données et les paramètres
-JasperPrint print=null;
-        try {
+            }
+            
+            // Remplir le rapport Jasper avec les données et les paramètres
+            JasperPrint print=null;
+            try {
             print = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
-        } catch (JRException ex) {
+            } catch (JRException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            // Afficher le rapport Jasper dans une fenêtre
+            JasperViewer.viewReport(print); // true == Exit on Close
+            */
+            bill_print();
+            bill.print();
+        } catch (PrinterException ex) {
             Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-// Afficher le rapport Jasper dans une fenêtre
-JasperViewer.viewReport(print); // true == Exit on Close
-        
     }//GEN-LAST:event_imprimerActionPerformed
 
     private void table_prodMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_prodMouseClicked
@@ -770,7 +853,7 @@ JasperViewer.viewReport(print); // true == Exit on Close
     }//GEN-LAST:event_table_prodMouseClicked
 
     private void valider_venteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_valider_venteActionPerformed
-        try {                                              
+        try {
             // TODO add your handling code here:
             if (code_prod_field1.getText().equals("") || fourni_field.getText().equals("") || ref_field.getText().equals("")
                     || remise_field.getText().equals("") || nouveau_prix_unit_field1.getText().equals("") || stock_field.getText().equals("")) {
@@ -784,20 +867,20 @@ JasperViewer.viewReport(print); // true == Exit on Close
                         String date = null;
                         while (rslt.next()) {
                             date = rslt.getString("date");
-                            
+
                         }
-                        
+
                         String[] donne = {code_prod_field1.getText(), search_field.getSelectedItem().toString(),
                             ref_field.getText(), stock_field.getText(), nouveau_prix_unit_field1.getText(), sous_total_facture.getText(), date};
-                        System.out.println(donne +" "+colonnes );
-                        
+                        System.out.println(donne + " " + colonnes);
+
                         base_donne.InsererParColns("vente", colonnes, donne);
-                          afficherTableVente();
-                          total_facture();
-                          update_stock();
-                          afficherTableVente();
+                        afficherTableVente();
                         total_facture();
-            
+                        update_stock();
+                        afficherTableVente();
+                        total_facture();
+
                     } else {
                         JOptionPane.showMessageDialog(this, "Quantité invalide");
                     }
@@ -806,21 +889,16 @@ JasperViewer.viewReport(print); // true == Exit on Close
                 } catch (SQLException ex) {
                     Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
-            
-             afficherTableProd();
-            
-               
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-                Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        
-            
-            
-        
+
+            afficherTableProd();
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
 
     }//GEN-LAST:event_valider_venteActionPerformed
@@ -919,23 +997,24 @@ JasperViewer.viewReport(print); // true == Exit on Close
 
     private void supprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerActionPerformed
         // TODO add your handling code here:
-        String id= String.valueOf(table_vente.getValueAt(table_vente.getSelectedRow(),0));
-        int stock_voulu=(int) table_vente.getValueAt(table_vente.getSelectedRow(),5);
-        String code_produit= String.valueOf(table_vente.getValueAt(table_vente.getSelectedRow(),2));
-        int id_int= Integer.parseInt(id);
-        if(JOptionPane.showConfirmDialog(this,"êtes-vous Sûr de supprimer","warning",JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
-        try {
-            update_stock2(stock_voulu,code_produit);
-            base_donne.Delete("vente"," id ='"+id+"'");
-            afficherTableProd();
-            afficherTableVente();
-            
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
-        }}
-        
+        String id = String.valueOf(table_vente.getValueAt(table_vente.getSelectedRow(), 0));
+        int stock_voulu = (int) table_vente.getValueAt(table_vente.getSelectedRow(), 5);
+        String code_produit = String.valueOf(table_vente.getValueAt(table_vente.getSelectedRow(), 2));
+        int id_int = Integer.parseInt(id);
+        if (JOptionPane.showConfirmDialog(this, "êtes-vous Sûr de supprimer", "warning", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            try {
+                update_stock2(stock_voulu, code_produit);
+                base_donne.Delete("vente", " id ='" + id + "'");
+                afficherTableProd();
+                afficherTableVente();
+
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         try {
             total_facture();
         } catch (SQLException ex) {
@@ -944,13 +1023,12 @@ JasperViewer.viewReport(print); // true == Exit on Close
             Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println(id);
-        
-        
+
+
     }//GEN-LAST:event_supprimerActionPerformed
 
     private void stock_fieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_stock_fieldKeyReleased
         // TODO add your handling code here:
-       
 
 
     }//GEN-LAST:event_stock_fieldKeyReleased
@@ -965,6 +1043,15 @@ JasperViewer.viewReport(print); // true == Exit on Close
             Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_search_fieldKeyReleased
+
+    private void previsual_factureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previsual_factureActionPerformed
+        // TODO add your handling code here:
+        bill_print();
+    }//GEN-LAST:event_previsual_factureActionPerformed
+
+    private void search_fieldItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_search_fieldItemStateChanged
+       
+    }//GEN-LAST:event_search_fieldItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -1011,6 +1098,7 @@ JasperViewer.viewReport(print); // true == Exit on Close
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea bill;
     private javax.swing.JTextField cash_field;
     private javax.swing.JTextField code_prod_field1;
     private javax.swing.JTextField credit_field;
@@ -1043,8 +1131,10 @@ JasperViewer.viewReport(print); // true == Exit on Close
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton lancer;
     private javax.swing.JTextField nouveau_prix_unit_field1;
+    private javax.swing.JButton previsual_facture;
     private javax.swing.JComboBox<String> recherche_cmbx;
     private javax.swing.JButton recherche_prod;
     private javax.swing.JTextField ref_field;

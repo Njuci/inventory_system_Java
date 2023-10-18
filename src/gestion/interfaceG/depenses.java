@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -626,6 +628,7 @@ public void date_set() {
                 System.out.println(nom);
                 try {
                     PdfWriter.getInstance(document, new FileOutputStream(nom));
+                    
                 } catch (DocumentException ex) {
                     Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -634,6 +637,14 @@ public void date_set() {
             }
             document.open();
             document.addTitle("depense du"+date_field.getText());
+            Paragraph paragraph = new Paragraph("Situation des depenses du"+date_field.getText());
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+             document.add(paragraph);
+             Paragraph espace = new Paragraph("");
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            document.add(espace);
+            document.add(espace);
+            
             
             PdfPTable pdfTable = new PdfPTable(table_depense.getColumnCount());
             
