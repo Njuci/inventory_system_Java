@@ -103,7 +103,7 @@ public void ChampsActual(){
         jLabel9 = new javax.swing.JLabel();
         unite_mesure = new javax.swing.JComboBox<>();
         jLabel10 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        devise_field = new javax.swing.JComboBox<>();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu4 = new javax.swing.JMenu();
         vendre_item = new javax.swing.JMenuItem();
@@ -276,7 +276,7 @@ public void ChampsActual(){
 
         jLabel10.setText("Unite de mesure");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "$", "Fc" }));
+        devise_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "$", "Fc" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -340,7 +340,7 @@ public void ChampsActual(){
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(devise_field, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(72, 72, 72)))
                 .addGap(25, 25, 25))
         );
@@ -378,7 +378,7 @@ public void ChampsActual(){
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(prix_unit_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(devise_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -403,7 +403,7 @@ public void ChampsActual(){
 
         jMenu4.setText("Menu");
 
-        vendre_item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        vendre_item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
         vendre_item.setText("Vendre");
         vendre_item.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -412,15 +412,15 @@ public void ChampsActual(){
         });
         jMenu4.add(vendre_item);
 
-        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem6.setText("Voir le Bilan ");
         jMenu4.add(jMenuItem6);
 
-        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem5.setText("Voir les depenses");
         jMenu4.add(jMenuItem5);
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem2.setText("Voir les vendeurs");
         jMenu4.add(jMenuItem2);
 
@@ -475,10 +475,11 @@ public void ChampsActual(){
             JOptionPane.showMessageDialog(this,"svp Veuillez Renseignez toute les champs");
            }    
         else{
-            String[] colonnes={"code_produit","designation","ref","fournisseur","prix_unitaire","stock","remise"};
+            String[] colonnes={"code_produit","designation","ref","fournisseur","prix_unitaire","devise","stock","unite_mesure","remise"};
             
             String[] donne={code_prod_field.getText(),desi_field.getText(),
-                ref_field.getText(),fourni_field.getText(),prix_unit_field.getText(),stock_field.getText(),remise_field.getText()
+                ref_field.getText(),fourni_field.getText(),prix_unit_field.getText(),devise_field.getSelectedItem().toString(),
+                stock_field.getText(),unite_mesure.getSelectedItem().toString(),remise_field.getText()
                };
             String id= String.valueOf(table_prod.getValueAt(table_prod.getSelectedRow(),0));
             base_donne.updateDonneTable("produit", colonnes,donne,"id='"+id+"'");
@@ -512,10 +513,11 @@ public void ChampsActual(){
             JOptionPane.showMessageDialog(this,"svp Veuillez Renseignez toute les champs");
            }    
         else{
-            String[] colonnes={"code_produit","designation","ref","fournisseur","prix_unitaire","stock","remise"};
+            String[] colonnes={"code_produit","designation","ref","fournisseur","prix_unitaire","devise","stock","unite_mesure","remise"};
             
             String[] donne={code_prod_field.getText(),desi_field.getText(),
-                ref_field.getText(),fourni_field.getText(),prix_unit_field.getText(),stock_field.getText(),remise_field.getText()
+                ref_field.getText(),fourni_field.getText(),prix_unit_field.getText(),devise_field.getSelectedItem().toString(),
+                stock_field.getText(),unite_mesure.getSelectedItem().toString(),remise_field.getText()
                };
             base_donne.InsererParColns("produit", colonnes,donne);
             
@@ -646,7 +648,7 @@ public void ChampsActual(){
     ref_field.setText(String.valueOf(table_prod.getValueAt(table_prod.getSelectedRow(),2)));
     remise_field.setText(String.valueOf(table_prod.getValueAt(table_prod.getSelectedRow(),5)));
     prix_unit_field.setText(String.valueOf(table_prod.getValueAt(table_prod.getSelectedRow(),6)));
-    stock_field.setText(String.valueOf(table_prod.getValueAt(table_prod.getSelectedRow(),7)));
+    stock_field.setText(String.valueOf(table_prod.getValueAt(table_prod.getSelectedRow(),8)));
         
         
     }//GEN-LAST:event_table_prodMouseClicked
@@ -716,8 +718,8 @@ public void ChampsActual(){
     private javax.swing.JButton Ajouterbtn;
     private javax.swing.JTextField code_prod_field;
     private javax.swing.JTextField desi_field;
+    private javax.swing.JComboBox<String> devise_field;
     private javax.swing.JTextField fourni_field;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;

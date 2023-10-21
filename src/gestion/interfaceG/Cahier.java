@@ -55,10 +55,10 @@ public class Cahier extends javax.swing.JFrame {
     public void bill_print() {
 
        
-            bill.setText("                             The Njuci'son                      \tDate : "+ date_field.getText()+"\n");
-            bill.setText(bill.getText() + "             \t17/ Athnee1, \n");
-            bill.setText(bill.getText() + "        \tBukavu, DRC, \n");
-            bill.setText(bill.getText() + "          \t+243 971595494, \n");
+            bill.setText("                            \t\tThe Njuci'son                      \tDate : "+ date_field.getText()+"\n");
+            bill.setText(bill.getText() + "        \t     \t  17/ Athnee1, \n");
+            bill.setText(bill.getText() + "        \t  \t  Bukavu, DRC, \n");
+            bill.setText(bill.getText() + "        \t   \t+243 971595494, \n");
             bill.setText(bill.getText() + " \n");
            bill.setText(bill.getText() +search_field.getSelectedItem().toString()+ " \n");
             bill.setText(bill.getText() + " \n");
@@ -82,7 +82,7 @@ public class Cahier extends javax.swing.JFrame {
             bill.setText(bill.getText() + "Cash :\t" + "0" + "\n");
             bill.setText(bill.getText() + "Ballance :\t" + total_facture.getText() + "\n");
             bill.setText(bill.getText() + "===========================================================\n");
-            bill.setText(bill.getText() + "                     Merci pour votre fidélité...!" + "\n");
+             bill.setText(bill.getText() + "                     Merci pour votre fidélité...!" + "\n");
             bill.setText(bill.getText() + "----------------------------------------------------------------\n");
             bill.setText(bill.getText() + "                     Software by Njuci " + "\n");
 
@@ -115,13 +115,13 @@ public class Cahier extends javax.swing.JFrame {
         }
         rslt.close();
 
-    }
+    }  
 
     public void afficherTableVente() throws ClassNotFoundException, SQLException {
 
-        String[] colonnes = {"code_produit", "ref", "prix_vente", "stock_sortie", "sous_total"};
+        String[] colonnes = {"td.code_produit", "td.ref", "td.prix_vente", "td.stock_sortie", "td.sous_total","tp.devise"};
 
-        ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "vente", "num_facture ='" + search_field.getSelectedItem().toString() + "'");
+        ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "vente As td  JOIN produit As tp", "td.num_facture ='" + search_field.getSelectedItem().toString() + "' and td.code_produit =tp.code_produit");
         String query = "SELECT  DATE_FORMAT(date, '%Y-%m-%d')As date FROM facture WHERE fac_num ='" + search_field.getSelectedItem().toString() + "'";
 
         rslt = base_donne.RecupererDonne(query);
@@ -192,9 +192,16 @@ public class Cahier extends javax.swing.JFrame {
 
     public void total_facture() throws SQLException, ClassNotFoundException {
 
-        rslt = base_donne.RecupererDonne("SELECT SUM(sous_total) AS total FROM vente WHERE num_facture ='" + search_field.getSelectedItem().toString() + "'");
+        rslt = base_donne.RecupererDonne("SELECT SUM(td.sous_total) AS total FROM vente As td  INNER JOIN produit As tp ON td.code_produit=tp.code_produit  WHERE td.num_facture ='" + search_field.getSelectedItem().toString() + "' and tp.devise='$'");
         rslt.next();
         total_facture.setText(rslt.getString("total"));
+        rslt.close();
+       
+        rslt = base_donne.RecupererDonne("SELECT SUM(td.sous_total) AS total FROM vente As td  INNER JOIN produit As tp ON td.code_produit=tp.code_produit  WHERE td.num_facture ='" + search_field.getSelectedItem().toString() + "' and tp.devise='fc'");
+        rslt.next();
+        total_facture_fc.setText(rslt.getString("total"));
+        rslt.close();
+       
 
     }
 
@@ -265,6 +272,7 @@ public class Cahier extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         bill = new javax.swing.JTextArea();
         previsual_facture = new javax.swing.JButton();
+        total_facture_fc = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         recherche_cmbx = new javax.swing.JComboBox<>();
@@ -289,6 +297,13 @@ public class Cahier extends javax.swing.JFrame {
         um_field = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         devise_field = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -296,20 +311,22 @@ public class Cahier extends javax.swing.JFrame {
 
         table_prod.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "id", "Code_produit", "ref", "Designation", "Fournisseur", "Remise", "Prix", "Devise", "Stock", "unite de Mesure"
+                "id", "Code_produit", "ref", "Designation", "Fournisseur", "Remise", "Prix", "Devise", "Stock", "unite de Mesure", "Devise"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -392,24 +409,24 @@ public class Cahier extends javax.swing.JFrame {
 
         table_vente.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Code_produit", "Reference", "Prix_vente", "Stock Vendu", "Sous-Total"
+                "Code_produit", "Reference", "Prix_vente", "Stock Vendu", "Sous-Total", "Devise"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -422,8 +439,8 @@ public class Cahier extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(table_vente);
 
-        jLabel22.setFont(new java.awt.Font("Tahoma", 3, 36)); // NOI18N
-        jLabel22.setText("Total");
+        jLabel22.setFont(new java.awt.Font("Tahoma", 3, 24)); // NOI18N
+        jLabel22.setText("Total $");
 
         total_facture.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
         total_facture.setText("0");
@@ -442,13 +459,18 @@ public class Cahier extends javax.swing.JFrame {
             }
         });
 
-        jLabel24.setFont(new java.awt.Font("Tahoma", 3, 36)); // NOI18N
-        jLabel24.setText("R.P");
+        jLabel24.setFont(new java.awt.Font("Tahoma", 3, 24)); // NOI18N
+        jLabel24.setText("Total Fc");
 
         search_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         search_field.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 search_fieldItemStateChanged(evt);
+            }
+        });
+        search_field.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                search_fieldActionPerformed(evt);
             }
         });
         search_field.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -477,6 +499,9 @@ public class Cahier extends javax.swing.JFrame {
             }
         });
 
+        total_facture_fc.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
+        total_facture_fc.setText("0");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -495,36 +520,38 @@ public class Cahier extends javax.swing.JFrame {
                         .addGap(40, 40, 40)
                         .addComponent(supprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(43, 43, 43)
                                 .addComponent(imprimer)
                                 .addGap(337, 337, 337)
                                 .addComponent(jButton5))
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                    .addGap(10, 10, 10)
-                                    .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(27, 27, 27)
-                                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(previsual_facture)
-                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                            .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                    .addGap(53, 53, 53)
-                                    .addComponent(jLabel4)
-                                    .addGap(28, 28, 28)
-                                    .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(95, 95, 95)
-                                    .addComponent(jLabel3)
-                                    .addGap(79, 79, 79)
-                                    .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(18, 18, 18)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(previsual_facture))
+                                        .addGap(62, 62, 62)
+                                        .addComponent(total_facture_fc, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addGap(28, 28, 28)
+                                        .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(95, 95, 95)
+                                        .addComponent(jLabel3)
+                                        .addGap(79, 79, 79)
+                                        .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(162, Short.MAX_VALUE))
         );
@@ -542,31 +569,25 @@ public class Cahier extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(38, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(26, 26, 26))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                        .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(total_facture_fc, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(date_venrte_field, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(19, 19, 19)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
                             .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 128, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -735,7 +756,7 @@ public class Cahier extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(devise_field))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
                     .addComponent(stock_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -751,6 +772,37 @@ public class Cahier extends javax.swing.JFrame {
                 .addComponent(valider_vente, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27))
         );
+
+        jMenu1.setText("Menu");
+
+        jMenuItem3.setText("Voir le bilan");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
+
+        jMenuItem5.setText("tableau de Bord");
+        jMenu1.add(jMenuItem5);
+
+        jMenuItem6.setText("Voir les depenses");
+        jMenu1.add(jMenuItem6);
+
+        jMenuItem7.setText("Login");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem7);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Quitter");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1053,6 +1105,18 @@ public class Cahier extends javax.swing.JFrame {
        
     }//GEN-LAST:event_search_fieldItemStateChanged
 
+    private void search_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search_fieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_search_fieldActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1126,6 +1190,13 @@ public class Cahier extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
@@ -1147,6 +1218,7 @@ public class Cahier extends javax.swing.JFrame {
     private javax.swing.JTable table_prod;
     private javax.swing.JTable table_vente;
     private javax.swing.JLabel total_facture;
+    private javax.swing.JLabel total_facture_fc;
     private javax.swing.JLabel um_field;
     private javax.swing.JButton valider_vente;
     // End of variables declaration//GEN-END:variables
