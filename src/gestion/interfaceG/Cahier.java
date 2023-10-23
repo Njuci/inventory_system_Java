@@ -55,35 +55,35 @@ public class Cahier extends javax.swing.JFrame {
     public void bill_print() {
 
        
-            bill.setText("                            \t\tThe Njuci'son                      \tDate : "+ date_field.getText()+"\n");
-            bill.setText(bill.getText() + "        \t     \t  17/ Athnee1, \n");
+            bill.setText("                            \t\tArchange                     \tDate : "+ date_field.getText()+"\n");
+            bill.setText(bill.getText() + "        \t     \t  , \n");
             bill.setText(bill.getText() + "        \t  \t  Bukavu, DRC, \n");
-            bill.setText(bill.getText() + "        \t   \t+243 971595494, \n");
+            bill.setText(bill.getText() + "        \t   \t , \n");
             bill.setText(bill.getText() + " \n");
            bill.setText(bill.getText() +search_field.getSelectedItem().toString()+ " \n");
             bill.setText(bill.getText() + " \n");
-            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------\n");
-            bill.setText(bill.getText() + " Code \tref \tPrice \tQty \tSous-total \n");
-            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------\n");
+            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------------------------\n");
+            bill.setText(bill.getText() + " Code \tref \tPrice \tQty \tSous-total \tDevise \n");
+            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------------------------\n");
 
             for (int i = 0; i < table_vente.getRowCount(); i++) {
 
-                String code_produit = table_vente.getValueAt(i, 0).toString();
-                String reference = table_vente.getValueAt(i, 1).toString();
-                String prc = table_vente.getValueAt(i, 2).toString();
-                String stv = table_vente.getValueAt(i, 3).toString();
-                String subtol = table_vente.getValueAt(i, 4).toString();
+                String code_produit = table_vente.getValueAt(i, 1).toString();
+                String reference = table_vente.getValueAt(i, 2).toString();
+                String prc = table_vente.getValueAt(i, 3).toString();
+                String stv = table_vente.getValueAt(i, 4).toString();
+                String subtol = table_vente.getValueAt(i, 5).toString();
+                String devise = table_vente.getValueAt(i, 6).toString();
 
-                bill.setText(bill.getText() + code_produit + "\t" + reference + "\t" + prc + "\t" + stv + "\t" + subtol + "\n");
+                bill.setText(bill.getText() + code_produit + "\t" + reference + "\t" + prc + "\t" + stv + "\t" + subtol + "\t" + devise +"\n");
 
             }
-            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------\n");
-            bill.setText(bill.getText() + "SubTotal :\t" + total_facture.getText() + "\n");
-            bill.setText(bill.getText() + "Cash :\t" + "0" + "\n");
-            bill.setText(bill.getText() + "Ballance :\t" + total_facture.getText() + "\n");
-            bill.setText(bill.getText() + "===========================================================\n");
+            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------------------------\n");
+            bill.setText(bill.getText() + "Sous-Total $:\t" + total_facture.getText() + "\n");
+            bill.setText(bill.getText() + "Sous-Total fc:\t" +  total_facture_fc.getText() + "\n");
+            bill.setText(bill.getText() + "===================================================================\n");
              bill.setText(bill.getText() + "                     Merci pour votre fidélité...!" + "\n");
-            bill.setText(bill.getText() + "----------------------------------------------------------------\n");
+            bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------------------------\n");
             bill.setText(bill.getText() + "                     Software by Njuci " + "\n");
 
             
@@ -119,7 +119,7 @@ public class Cahier extends javax.swing.JFrame {
 
     public void afficherTableVente() throws ClassNotFoundException, SQLException {
 
-        String[] colonnes = {"td.code_produit", "td.ref", "td.prix_vente", "td.stock_sortie", "td.sous_total","tp.devise"};
+        String[] colonnes = {"td.id,td.code_produit", "td.ref", "td.prix_vente", "td.stock_sortie", "td.sous_total","tp.devise"};
 
         ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "vente As td  JOIN produit As tp", "td.num_facture ='" + search_field.getSelectedItem().toString() + "' and td.code_produit =tp.code_produit");
         String query = "SELECT  DATE_FORMAT(date, '%Y-%m-%d')As date FROM facture WHERE fac_num ='" + search_field.getSelectedItem().toString() + "'";
@@ -132,6 +132,7 @@ public class Cahier extends javax.swing.JFrame {
 
         table_vente.setModel(new ResultSetTableModel(resultSet));
         total_facture();
+        bill_print();
     }
 //
 
@@ -194,13 +195,20 @@ public class Cahier extends javax.swing.JFrame {
 
         rslt = base_donne.RecupererDonne("SELECT SUM(td.sous_total) AS total FROM vente As td  INNER JOIN produit As tp ON td.code_produit=tp.code_produit  WHERE td.num_facture ='" + search_field.getSelectedItem().toString() + "' and tp.devise='$'");
         rslt.next();
+        if (rslt.getString("total")!=null){
         total_facture.setText(rslt.getString("total"));
-        rslt.close();
+        rslt.close();}else {
+         total_facture.setText("0");
+         }
+        
        
         rslt = base_donne.RecupererDonne("SELECT SUM(td.sous_total) AS total FROM vente As td  INNER JOIN produit As tp ON td.code_produit=tp.code_produit  WHERE td.num_facture ='" + search_field.getSelectedItem().toString() + "' and tp.devise='fc'");
         rslt.next();
+         if (rslt.getString("total")!=null){
         total_facture_fc.setText(rslt.getString("total"));
-        rslt.close();
+        rslt.close();}else {
+         total_facture_fc.setText("0");
+         }
        
 
     }
@@ -223,16 +231,7 @@ public class Cahier extends javax.swing.JFrame {
     }
 
     public void ApayeApre() {
-        if (credit_field.getText().equals("")) {
-            JOptionPane.showMessageDialog(this, "svp Veuillez Renseignez  le champs Crefit");
-
-        } else {
-            int credit = Integer.parseInt(credit_field.getText());
-            int total = Integer.parseInt(total_facture.getText());
-            int reste = total - credit;
-            String reste_st = String.valueOf(reste);
-            cash_field.setText(reste_st);
-        }
+        
 
     }
 
@@ -253,10 +252,7 @@ public class Cahier extends javax.swing.JFrame {
         heure_field = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         lancer = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        credit_field = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         table_vente = new javax.swing.JTable();
@@ -265,13 +261,11 @@ public class Cahier extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         imprimer = new javax.swing.JButton();
         jLabel24 = new javax.swing.JLabel();
-        cash_field = new javax.swing.JTextField();
         search_field = new javax.swing.JComboBox<>();
         supprimer = new javax.swing.JButton();
         date_venrte_field = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         bill = new javax.swing.JTextArea();
-        previsual_facture = new javax.swing.JButton();
         total_facture_fc = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
@@ -300,7 +294,7 @@ public class Cahier extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        voir_depenses = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -357,19 +351,16 @@ public class Cahier extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addContainerGap())
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(72, 72, 72)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37))))
+                .addGap(32, 32, 32)
+                .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(72, 72, 72)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 323, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -389,16 +380,12 @@ public class Cahier extends javax.swing.JFrame {
 
         jLabel2.setText("Num Fac");
 
-        jLabel3.setText("Crédit ");
-
         lancer.setText("Lancer");
         lancer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lancerActionPerformed(evt);
             }
         });
-
-        jLabel4.setText("Cash");
 
         jButton2.setText("Creer une nouvelle facture");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -409,24 +396,24 @@ public class Cahier extends javax.swing.JFrame {
 
         table_vente.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Code_produit", "Reference", "Prix_vente", "Stock Vendu", "Sous-Total", "Devise"
+                "Id", "Code_produit", "Reference", "Prix_vente", "Stock Vendu", "Sous-Total", "Devise"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -492,13 +479,6 @@ public class Cahier extends javax.swing.JFrame {
         bill.setRows(5);
         jScrollPane3.setViewportView(bill);
 
-        previsual_facture.setText("Prévisualiser la facture");
-        previsual_facture.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                previsual_factureActionPerformed(evt);
-            }
-        });
-
         total_facture_fc.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
         total_facture_fc.setText("0");
 
@@ -518,46 +498,36 @@ public class Cahier extends javax.swing.JFrame {
                         .addGap(80, 80, 80)
                         .addComponent(jButton2)
                         .addGap(40, 40, 40)
-                        .addComponent(supprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(supprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(43, 43, 43)
-                                .addComponent(imprimer)
-                                .addGap(337, 337, 337)
-                                .addComponent(jButton5))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addGap(43, 43, 43)
+                                    .addComponent(imprimer)
+                                    .addGap(337, 337, 337)
+                                    .addComponent(jButton5))
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                    .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(115, 115, 115)))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(10, 10, 10)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(previsual_facture))
-                                        .addGap(62, 62, 62)
-                                        .addComponent(total_facture_fc, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addGap(28, 28, 28)
-                                        .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(95, 95, 95)
-                                        .addComponent(jLabel3)
-                                        .addGap(79, 79, 79)
-                                        .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(162, Short.MAX_VALUE))
+                                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(44, 44, 44)
+                                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(total_facture_fc, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 561, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(116, 116, 116))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -568,31 +538,23 @@ public class Cahier extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(total_facture_fc, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(date_venrte_field, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(19, 19, 19)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(credit_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cash_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(total_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(total_facture_fc, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(44, 44, 44)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(previsual_facture, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(48, 48, 48))))
+                            .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(48, 48, 48))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         jPanel4.setBackground(new java.awt.Color(51, 204, 255));
@@ -783,13 +745,23 @@ public class Cahier extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem3);
 
-        jMenuItem5.setText("tableau de Bord");
-        jMenu1.add(jMenuItem5);
+        voir_depenses.setText("Voir les Depenses");
+        voir_depenses.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                voir_depensesActionPerformed(evt);
+            }
+        });
+        jMenu1.add(voir_depenses);
 
-        jMenuItem6.setText("Voir les depenses");
+        jMenuItem6.setText("Login");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem6);
 
-        jMenuItem7.setText("Login");
+        jMenuItem7.setText("Produit");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem7ActionPerformed(evt);
@@ -808,12 +780,11 @@ public class Cahier extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1396, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1050,8 +1021,8 @@ public class Cahier extends javax.swing.JFrame {
     private void supprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supprimerActionPerformed
         // TODO add your handling code here:
         String id = String.valueOf(table_vente.getValueAt(table_vente.getSelectedRow(), 0));
-        int stock_voulu = (int) table_vente.getValueAt(table_vente.getSelectedRow(), 5);
-        String code_produit = String.valueOf(table_vente.getValueAt(table_vente.getSelectedRow(), 2));
+        int stock_voulu = (int) table_vente.getValueAt(table_vente.getSelectedRow(), 4);
+        String code_produit = String.valueOf(table_vente.getValueAt(table_vente.getSelectedRow(), 1));
         int id_int = Integer.parseInt(id);
         if (JOptionPane.showConfirmDialog(this, "êtes-vous Sûr de supprimer", "warning", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             try {
@@ -1096,11 +1067,6 @@ public class Cahier extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_search_fieldKeyReleased
 
-    private void previsual_factureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previsual_factureActionPerformed
-        // TODO add your handling code here:
-        bill_print();
-    }//GEN-LAST:event_previsual_factureActionPerformed
-
     private void search_fieldItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_search_fieldItemStateChanged
        
     }//GEN-LAST:event_search_fieldItemStateChanged
@@ -1110,12 +1076,42 @@ public class Cahier extends javax.swing.JFrame {
     }//GEN-LAST:event_search_fieldActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            Bilan b= new Bilan ();
+            this.dispose();
+            b.setVisible(true);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void voir_depensesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voir_depensesActionPerformed
+        // TODO add your handling code here:
+        depenses d=null;
+        try {
+            d = new depenses();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.dispose();
+        d.setVisible(true);
+    }//GEN-LAST:event_voir_depensesActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        // TODO add your handling code here:
+        login lg=new login();
+        lg.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1163,9 +1159,7 @@ public class Cahier extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea bill;
-    private javax.swing.JTextField cash_field;
     private javax.swing.JTextField code_prod_field1;
-    private javax.swing.JTextField credit_field;
     private javax.swing.JLabel date_field;
     private javax.swing.JLabel date_venrte_field;
     private javax.swing.JLabel devise_field;
@@ -1187,14 +1181,11 @@ public class Cahier extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
@@ -1205,7 +1196,6 @@ public class Cahier extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton lancer;
     private javax.swing.JTextField nouveau_prix_unit_field1;
-    private javax.swing.JButton previsual_facture;
     private javax.swing.JComboBox<String> recherche_cmbx;
     private javax.swing.JButton recherche_prod;
     private javax.swing.JTextField ref_field;
@@ -1221,5 +1211,6 @@ public class Cahier extends javax.swing.JFrame {
     private javax.swing.JLabel total_facture_fc;
     private javax.swing.JLabel um_field;
     private javax.swing.JButton valider_vente;
+    private javax.swing.JMenuItem voir_depenses;
     // End of variables declaration//GEN-END:variables
 }

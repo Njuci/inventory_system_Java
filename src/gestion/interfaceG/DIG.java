@@ -228,7 +228,18 @@ public class DIG extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void depense_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_depense_btnActionPerformed
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            depenses a=new depenses();
+            
+            this.dispose();
+            a.setVisible(true);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DIG.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DIG.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_depense_btnActionPerformed
 
     /**
@@ -256,6 +267,9 @@ public class DIG extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(DIG.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
