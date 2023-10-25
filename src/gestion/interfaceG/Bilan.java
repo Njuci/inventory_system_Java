@@ -36,88 +36,74 @@ public class Bilan extends javax.swing.JFrame {
          
         rslt = base_donne.RecupererDonne(query);
         moi_field.removeAllItems();
+        debut_date.removeAllItems();
+        fin_date.removeAllItems();
+        jour.removeAllItems();
         while (rslt.next()) {
            moi_field.addItem(rslt.getString("moi"));
 
         }
+         String query1="SELECT DISTINCT DATE_FORMAT(date, '%Y-%m-%d') As moi FROM (\n" +
+                "  SELECT date_vente AS date FROM vente\n" +
+                "  UNION\n" +
+                "  SELECT date AS date FROM depenses\n" +
+                ") AS dates ORDER BY(date)";
+         
+        rslt = base_donne.RecupererDonne(query1);
+         while (rslt.next()) {
+           jour.addItem(rslt.getString("moi"));
+           debut_date.addItem(rslt.getString("moi"));
+           fin_date.addItem(rslt.getString("moi"));
+
+        }
+        
         rslt.close();
 
     }
 public void combox_remplissage() throws SQLException, ClassNotFoundException {
-        String query="SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') As moi FROM (\n" +
+        String query="SELECT DISTINCT DATE_FORMAT(date, '%Y-%m-%d') As moi FROM (\n" +
                 "  SELECT date_vente AS date FROM vente\n" +
                 "  UNION\n" +
                 "  SELECT date AS date FROM depenses\n" +
                 ") AS dates";
          
         rslt = base_donne.RecupererDonne(query);
-        date_debut_field.removeAllItems();
-        jour_fin.removeAllItems();
+        debut_date.removeAllItems();
+        jour.removeAllItems();
         while (rslt.next()) {
-           jour_fin.addItem(rslt.getString("moi"));
-           date_debut_field.addItem(rslt.getString("moi"));
+           jour.addItem(rslt.getString("moi"));
+           debut_date.addItem(rslt.getString("moi"));
 
         }
         rslt.close();
 
     }
     public void afficherTableBilan() throws ClassNotFoundException, SQLException {
-     // Sous-requête pour calculer la somme des entrées
-    String entreesQuery = "SELECT date, SUM(montant) AS total_entrees " +
-                          "FROM depenses " +
-                          "WHERE montant > 0 " +
-                          "GROUP BY date";
+     
 
-    // Sous-requête pour calculer la somme des sorties
-    String sortiesQuery = "SELECT date, SUM(montant) AS total_sorties " +
-                          "FROM depenses " +
-                          "WHERE montant < 0 " +
-                          "GROUP BY date";
-    String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d'), SUM(sous_total) AS total_entrees, SUM(sorties) AS total_sorties, SUM(sous_total) - SUM(sorties) AS difference,\n" +
-" SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS cumul_difference\n" +
-"FROM (\n" +
-"  SELECT  date_vente AS date, sous_total, 0 AS sorties FROM vente  UNION ALL\n" +
-"  SELECT date, 0 AS vente, montant FROM depenses\n" +
+    String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+"  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = '$' and tp.code_produit=td.code_produit  UNION ALL\n" +
+"  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$' \n" +
 ") AS t\n" +
-"GROUP BY date;";
+"GROUP BY date";
 
-    // Requête principale pour combiner les résultats et calculer la différence
-    String query = "SELECT e.date, e.total_entrees, s.total_sorties, " +
-                   "       (e.total_entrees - s.total_sorties) AS difference, " +
-                   "       @cumul := @cumul + (e.total_entrees - s.total_sorties) AS cumul_diff " +
-                   "FROM (" + entreesQuery + ") AS e " +
-                   "JOIN (" + sortiesQuery + ") AS s " +
-                   "ON e.date = s.date, (SELECT @cumul := 0) c " +
-                   "ORDER BY e.date";
-          
-String query3=
-"SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
-        + "        COALESCE(s.total_sorties, 0) AS total_sorties,       "
-        + " (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0)) AS difference,   "
-        + "     @cumul := @cumul + (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0))"
-        + " AS cumul_diff FROM (SELECT COALESCE(v.date_vente, d.date) AS date,    "
-        + "    COALESCE(SUM(v.sous_total), 0) AS total_entrees FROM vente v LEFT JOIN depenses d ON v.date_vente = "
-        + "d.date WHERE COALESCE(v.sous_total, 0) >= 0       OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS "
-        + "e JOIN (SELECT COALESCE(v.date_vente, d.date) AS date,        COALESCE(SUM(d.montant), 0) AS total_sorties F"
-        + "ROM vente v RIGHT JOIN depenses d ON v.date_vente = d.date WHERE COALESCE(v.sous_total, 0) >= 0      "
-        + " OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS s ON e.date = s.date, (SELECT @cumul := 0)"
-        + " c ORDER BY e.date";
-String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
-        + "        COALESCE(s.total_sorties, 0) AS total_sorties,    "
-        + "    (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0)) AS difference"
-        + ",        @cumul := @cumul + (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0)) "
-        + "AS cumul_diff FROM (SELECT DISTINCT COALESCE(v.date_vente, d.date) AS date,  "
-        + "      COALESCE(SUM(v.sous_total), 0) AS total_entrees FROM vente v LEFT JOIN"
-        + " depenses d ON v.date_vente = d.date WHERE COALESCE(v.sous_total, 0) >= 0       "
-        + "OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS e JOIN (SELECT DISTINCT COALESCE(v.date_vente, d.date) AS date,    "
-        + "    COALESCE(SUM(d.montant), 0) AS total_sorties FROM vente v RIGHT JOIN depenses d ON v.date_vente = d.date "
-        + "WHERE COALESCE(v.sous_total, 0) >= 0 "
-        + ""
-        + "      OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS s ON e.date = s.date, (SELECT @cumul := 0)"
-        + " c ORDER BY e.date;";
-                   rslt=base_donne.RecupererDonne(query6);
+                    rslt=base_donne.RecupererDonne(query6);
         // Défianir le modèle de tableau sur le composant table_user
         table_bilan.setModel(new ResultSetTableModel(rslt));
+        
+    String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+"  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = 'fc' and tp.code_produit=td.code_produit  UNION ALL\n" +
+"  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='fc' \n" +
+") AS t\n" +
+"GROUP BY date";
+
+                    rslt=base_donne.RecupererDonne(query7);
+        // Défianir le modèle de tableau sur le composant table_user
+        table_bilan_fc.setModel(new ResultSetTableModel(rslt));
      
     }
 
@@ -135,12 +121,22 @@ String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
         jLabel2 = new javax.swing.JLabel();
         moi_field = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        date_debut_field = new javax.swing.JComboBox<>();
+        debut_date = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
-        jour_fin = new javax.swing.JComboBox<>();
+        jour = new javax.swing.JComboBox<>();
+        recher_par_moi = new javax.swing.JButton();
+        interval_search = new javax.swing.JButton();
+        fin_date = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        search_journey = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_bilan = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table_bilan_fc = new javax.swing.JTable();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        imprimer = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -161,49 +157,112 @@ String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
 
         jLabel3.setText("Date debut");
 
-        date_debut_field.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        debut_date.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        debut_date.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                debut_dateActionPerformed(evt);
+            }
+        });
 
-        jLabel4.setText("Date fin ou Journée");
+        jLabel4.setText("Date fin");
 
-        jour_fin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jour.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jour.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jourActionPerformed(evt);
+            }
+        });
+
+        recher_par_moi.setText("Bilan par moi");
+        recher_par_moi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                recher_par_moiActionPerformed(evt);
+            }
+        });
+
+        interval_search.setText("Rechercher Par intervalle");
+        interval_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                interval_searchActionPerformed(evt);
+            }
+        });
+
+        fin_date.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        fin_date.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fin_dateActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Journée");
+
+        search_journey.setText("Rechercher par Journeé");
+        search_journey.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                search_journeyActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(moi_field, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(112, 112, 112)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(date_debut_field, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addComponent(jLabel4)
-                .addGap(18, 18, 18)
-                .addComponent(jour_fin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                        .addGap(71, 71, 71)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(recher_par_moi)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(debut_date, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(fin_date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(97, 97, 97))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(interval_search)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(search_journey)
+                        .addGap(67, 67, 67))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(380, 380, 380)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(38, 38, 38)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(moi_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
-                    .addComponent(date_debut_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(debut_date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
-                    .addComponent(jour_fin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(39, Short.MAX_VALUE))
+                    .addComponent(jour, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fin_date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(recher_par_moi)
+                    .addComponent(interval_search)
+                    .addComponent(search_journey))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(51, 204, 255));
@@ -213,10 +272,16 @@ String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
                 {null, null, null, null}
             },
             new String [] {
-                "Date ", "Entrees", "Sortie", "Cumul"
+                "Date ", "Ventes", "Depenses", "Cumul"
             }
         ) {
             Class[] types = new Class [] {
@@ -236,20 +301,86 @@ String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
         });
         jScrollPane1.setViewportView(table_bilan);
 
+        table_bilan_fc.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Date ", "Ventes", "Depenses", "Cumul"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Float.class, java.lang.Float.class, java.lang.Float.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(table_bilan_fc);
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Bilan en Dollars Americains");
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Bilan en Francs Congolais");
+
+        imprimer.setText("Imprimer");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(41, 41, 41)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(475, 475, 475)
+                .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 213, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(25, 25, 25)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(3, 3, 3)
+                .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -262,10 +393,10 @@ String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addContainerGap())
         );
 
         pack();
@@ -274,6 +405,141 @@ String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
     private void moi_fieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moi_fieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_moi_fieldActionPerformed
+
+    private void debut_dateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_debut_dateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_debut_dateActionPerformed
+
+    private void jourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jourActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jourActionPerformed
+
+    private void fin_dateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fin_dateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fin_dateActionPerformed
+
+    private void recher_par_moiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recher_par_moiActionPerformed
+        try {                                               
+            // TODO add your handling code here:
+            String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+                    "  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = '$' and tp.code_produit=td.code_produit  UNION ALL\n" +
+                    "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$'\n" +
+                    ") AS t\n" +" WHERE date like '%"+ moi_field.getSelectedItem().toString()+"%'\n "+
+                    "GROUP BY date";
+            
+                rslt=base_donne.RecupererDonne(query6);
+           
+            // Défianir le modèle de tableau sur le composant table_user
+            table_bilan.setModel(new ResultSetTableModel(rslt));
+            
+            String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+                    "  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = 'fc' and tp.code_produit=td.code_produit  UNION ALL\n" +
+                    "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='fc'\n" +
+                    ") AS t\n" +" WHERE date like '%"+ moi_field.getSelectedItem().toString()+"%'\n "+
+                    "GROUP BY date";
+            
+            rslt=base_donne.RecupererDonne(query7);
+            // Défianir le modèle de tableau sur le composant table_user
+            table_bilan_fc.setModel(new ResultSetTableModel(rslt));
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     
+    
+        
+        
+    }//GEN-LAST:event_recher_par_moiActionPerformed
+
+    private void interval_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interval_searchActionPerformed
+        // TODO add your handling code here:
+        try {                                               
+            // TODO add your handling code here:
+            String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+                    "  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = '$' and tp.code_produit=td.code_produit  UNION ALL\n" +
+                    "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$'  \n" +
+                    ") AS t\n" +" where  date BETWEEN '"+ debut_date.getSelectedItem().toString() +"' and '"+fin_date.getSelectedItem().toString()+"'\n" +
+                    "GROUP BY date";
+            
+                rslt=base_donne.RecupererDonne(query6);
+           
+            // Défianir le modèle de tableau sur le composant table_user
+            table_bilan.setModel(new ResultSetTableModel(rslt));
+            
+            String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+                    "  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = 'fc' and tp.code_produit=td.code_produit  UNION ALL\n" +
+                    "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='fc'  \n" +
+                    ") AS t\n" +" where  date BETWEEN '"+ debut_date.getSelectedItem().toString() +"' and '"+fin_date.getSelectedItem().toString()+"'\n" +
+                    "GROUP BY date";
+            
+            rslt=base_donne.RecupererDonne(query7);
+            // Défianir le modèle de tableau sur le composant table_user
+            table_bilan_fc.setModel(new ResultSetTableModel(rslt));
+            System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     
+        
+        
+    }//GEN-LAST:event_interval_searchActionPerformed
+
+    private void search_journeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search_journeyActionPerformed
+        // TODO add your handling code here:
+         try {                                               
+            // TODO add your handling code here:
+            String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+                    "  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = '$' and tp.code_produit=td.code_produit  UNION ALL\n" +
+                    "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$'\n" +
+                    ") AS t\n" +" WHERE date like '%"+ jour.getSelectedItem().toString()+"%'\n "+
+                    "GROUP BY date";
+            
+                rslt=base_donne.RecupererDonne(query6);
+           
+            // Défianir le modèle de tableau sur le composant table_user
+            table_bilan.setModel(new ResultSetTableModel(rslt));
+            
+            String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
+                    " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
+                    "FROM (\n" +
+                    "  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = 'fc' and tp.code_produit=td.code_produit  UNION ALL\n" +
+                    "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='fc'\n" +
+                    ") AS t\n" +" WHERE date like '%"+ jour.getSelectedItem().toString()+"%'\n "+
+                    "GROUP BY date";
+            
+            rslt=base_donne.RecupererDonne(query7);
+            // Défianir le modèle de tableau sur le composant table_user
+            table_bilan_fc.setModel(new ResultSetTableModel(rslt));
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     
+    
+    }//GEN-LAST:event_search_journeyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -317,16 +583,26 @@ String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> date_debut_field;
+    private javax.swing.JComboBox<String> debut_date;
+    private javax.swing.JComboBox<String> fin_date;
+    private javax.swing.JButton imprimer;
+    private javax.swing.JButton interval_search;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JComboBox<String> jour_fin;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JComboBox<String> jour;
     private javax.swing.JComboBox<String> moi_field;
+    private javax.swing.JButton recher_par_moi;
+    private javax.swing.JButton search_journey;
     private javax.swing.JTable table_bilan;
+    private javax.swing.JTable table_bilan_fc;
     // End of variables declaration//GEN-END:variables
 }

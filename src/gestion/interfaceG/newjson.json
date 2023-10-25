@@ -1,0 +1,57 @@
+ String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d'), SUM(sous_total) AS total_entrees, SUM(sorties) AS total_sorties, SUM(sous_total) - SUM(sorties) AS difference,\n" +
+" SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS cumul_difference\n" +
+"FROM (\n" +
+"  SELECT  date_vente AS date, tp.sous_total, 0 AS sorties FROM vente As tp JOIN produit As td  WHERE td.devise = '$' and tp.code_produit=td.code_produit  UNION ALL\n" +
+"  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$' \n" +
+") AS t\n" +
+"GROUP BY date";
+ // Requête principale pour combiner les résultats et calculer la différence
+    String query = "SELECT e.date, e.total_entrees, s.total_sorties, " +
+                   "       (e.total_entrees - s.total_sorties) AS difference, " +
+                   "       @cumul := @cumul + (e.total_entrees - s.total_sorties) AS cumul_diff " +
+                   "FROM ("
+ + entreesQuery + ") AS e " +
+                   "JOIN (" + sortiesQuery + ") AS s " +
+                   "ON e.date = s.date, (SELECT @cumul := 0) c " +
+                   "ORDER BY e.date";
+ 
+ 
+          
+String query3=
+"SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
+        + "        COALESCE(s.total_sorties, 0) AS total_sorties,       "
+        + " (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0)) AS difference,   "
+        + "     @cumul := @cumul + (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0))"
+        + " AS cumul_diff FROM (SELECT COALESCE(v.date_vente, d.date) AS date,    "
+        + "    COALESCE(SUM(v.sous_total), 0) AS total_entrees FROM vente v LEFT JOIN depenses d ON v.date_vente = "
+        + "d.date WHERE COALESCE(v.sous_total, 0) >= 0       OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS "
+        + "e JOIN (SELECT COALESCE(v.date_vente, d.date) AS date,        COALESCE(SUM(d.montant), 0) AS total_sorties F"
+        + "ROM vente v RIGHT JOIN depenses d ON v.date_vente = d.date WHERE COALESCE(v.sous_total, 0) >= 0      "
+        + " OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS s ON e.date = s.date, (SELECT @cumul := 0)"
+        + " c ORDER BY e.date";
+String query4="SELECT e.date, COALESCE(e.total_entrees, 0) AS total_entrees,"
+        + "        COALESCE(s.total_sorties, 0) AS total_sorties,    "
+        + "    (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0)) AS difference"
+        + ",        @cumul := @cumul + (COALESCE(e.total_entrees, 0) - COALESCE(s.total_sorties, 0)) "
+        + "AS cumul_diff FROM (SELECT DISTINCT COALESCE(v.date_vente, d.date) AS date,  "
+        + "      COALESCE(SUM(v.sous_total), 0) AS total_entrees FROM vente v LEFT JOIN"
+        + " depenses d ON v.date_vente = d.date WHERE COALESCE(v.sous_total, 0) >= 0       "
+        + "OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS e JOIN (SELECT DISTINCT COALESCE(v.date_vente, d.date) AS date,    "
+        + "    COALESCE(SUM(d.montant), 0) AS total_sorties FROM vente v RIGHT JOIN depenses d ON v.date_vente = d.date "
+        + "WHERE COALESCE(v.sous_total, 0) >= 0 "
+        + ""
+        + "      OR COALESCE(d.montant, 0) >= 0 GROUP BY date) AS s ON e.date = s.date, (SELECT @cumul := 0)"
+        + " c ORDER BY e.date;";
+   
+    // Sous-requête pour calculer la somme des sorties
+    String sortiesQuery = "SELECT date, SUM(montant) AS total_sorties " +
+                          "FROM depenses " +
+                          "WHERE montant < 0 " +
+                          "GROUP BY date";
+ 
+ 
+ // Sous-requête pour calculer la somme des entrées
+    String entreesQuery = "SELECT date, SUM(montant) AS total_entrees " +
+                          "FROM depenses " +
+                          "WHERE montant > 0 " +
+                          "GROUP BY date";
