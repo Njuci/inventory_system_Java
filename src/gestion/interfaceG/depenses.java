@@ -20,6 +20,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -35,7 +36,15 @@ import com.itextpdf.text.pdf.PdfWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import javax.swing.JFrame;
-
+import java.awt.BorderLayout;
+import java.io.File;
+import java.io.FileInputStream;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import com.adobe.acrobat.Viewer;
+import java.io.IOException;
+import javax.swing.ImageIcon;
 /**
  *
  * @author Administrator
@@ -50,6 +59,9 @@ public class depenses extends javax.swing.JFrame {
     
     public depenses() throws ClassNotFoundException, SQLException {
         initComponents();
+        
+         ImageIcon icon = new ImageIcon("photos/logo.jpg");
+        setIconImage(icon.getImage());
         this.setBounds(0, 0, 1440, 670);
         base_donne=new BDD();
         this.setResizable(false);
@@ -102,13 +114,15 @@ public class depenses extends javax.swing.JFrame {
 "       @cumul := @cumul + montant AS cumul\n" +
 "FROM depenses, (SELECT @cumul := 0) c\n" +
 "WHERE devise='$' ORDER BY date");
+  
     
     
     // Créer un modèle de tableau avec le ResultSet
     
     // Définir le modèle de tableau sur le composant table_user
     table_depense.setModel(new ResultSetTableModel(rslt));
-    total_table();}
+    total_table();
+      combox_remplissage();}
     
       public void afficherTable_fc() throws ClassNotFoundException, SQLException {
     String[] colonnes = {"id","code_produit","ref","designation","fournisseur","remise","prix_unitaire","stock","date"};
@@ -122,7 +136,8 @@ public class depenses extends javax.swing.JFrame {
     
     // Définir le modèle de tableau sur le composant table_user
     table_depense_fc.setModel(new ResultSetTableModel(rslt));
-    total_table();}
+    total_table();
+        combox_remplissage();}
     public void combox_remplissage() throws SQLException, ClassNotFoundException {
         rslt = base_donne.RecupererDonne("SELECT DISTINCT DATE_FORMAT(date, '%Y-%m-%d')As date FROM depenses order by -date");
         date_search_field.removeAllItems();
@@ -197,6 +212,7 @@ public void date_set() {
         jLabel10 = new javax.swing.JLabel();
         total_lbl_fc = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
+        voir_les_autres = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         vendre_e = new javax.swing.JMenuItem();
@@ -453,7 +469,7 @@ public void date_set() {
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Total");
         jPanel2.add(jLabel6);
-        jLabel6.setBounds(260, 210, 90, 40);
+        jLabel6.setBounds(130, 210, 90, 40);
 
         imprimer.setText("Imprimer");
         imprimer.addActionListener(new java.awt.event.ActionListener() {
@@ -462,7 +478,7 @@ public void date_set() {
             }
         });
         jPanel2.add(imprimer);
-        imprimer.setBounds(640, 280, 130, 50);
+        imprimer.setBounds(800, 240, 130, 50);
 
         table_depense_fc.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -515,13 +531,22 @@ public void date_set() {
         total_lbl_fc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         total_lbl_fc.setText("0");
         jPanel2.add(total_lbl_fc);
-        total_lbl_fc.setBounds(350, 210, 270, 40);
+        total_lbl_fc.setBounds(210, 210, 270, 40);
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel11.setText("Total");
         jPanel2.add(jLabel11);
         jLabel11.setBounds(1070, 230, 90, 40);
+
+        voir_les_autres.setText("Voir les depenses");
+        voir_les_autres.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                voir_les_autresActionPerformed(evt);
+            }
+        });
+        jPanel2.add(voir_les_autres);
+        voir_les_autres.setBounds(410, 240, 160, 50);
 
         getContentPane().add(jPanel2);
         jPanel2.setBounds(0, 240, 1440, 370);
@@ -573,6 +598,7 @@ public void date_set() {
                 try {
                      String[] colonne ={"libele","montant","devise"};
                     String[] donne={libele_field.getText(),montant_field.getText(),devise_field.getSelectedItem().toString()};
+                    
                     base_donne.InsererParColns("depenses", colonne, donne);
                     afficherTable();
                     afficherTable_fc();
@@ -706,6 +732,7 @@ public void date_set() {
                      if(JOptionPane.showConfirmDialog(this,"êtes-vous Sûr de supprimer","warning",JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
             try {
                 base_donne.Delete("depenses","id ='"+id+"'");
+                
                 afficherTable();
                 afficherTable_fc();
             } catch (ClassNotFoundException ex) {
@@ -759,7 +786,7 @@ public void date_set() {
     private void imprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imprimerActionPerformed
          SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyHHmmss");
                 Date date = new Date();
-                String nom="pdf/table_depeses"+s.format(date).toString()+".pdf";
+                String nom="pdf/depenses/table_depeses"+s.format(date).toString()+".pdf";
                 
         try {                                         
             Document document = new Document();
@@ -801,8 +828,30 @@ public void date_set() {
         }
 
         document.add(pdfTable);
+        document.add(espace);
+        document.add(espace);
+        
+        
 
         Paragraph p=new Paragraph("Situation des depenses en fc du"+date_field.getText()+"\n"+"\n");
+        p.setAlignment(Element.ALIGN_CENTER);
+        document.add(p);
+        document.add(espace);
+        document.add(espace);
+        pdfTable = new PdfPTable(table_depense_fc.getColumnCount());
+          for (int i = 0; i < table_depense_fc.getColumnCount(); i++) {
+            pdfTable.addCell(table_depense_fc.getColumnName(i));
+            }
+
+// Ajouter les données de la JTable
+        for (int rows = 0; rows < table_depense_fc.getRowCount(); rows++) {
+        for (int cols = 0; cols < table_depense_fc.getColumnCount(); cols++) {
+        pdfTable.addCell(table_depense_fc.getModel().getValueAt(rows, cols).toString());
+        }
+        }
+
+        document.add(pdfTable);
+        
         
 
 
@@ -834,6 +883,29 @@ document.close();
         
     }//GEN-LAST:event_table_depense_fcMouseClicked
 
+    private void voir_les_autresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voir_les_autresActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        File currentDir = new File(System.getProperty("user.dir"));
+File subDir = new File(currentDir, "pdf/depenses");
+
+        chooser.setCurrentDirectory(subDir);
+        int result = chooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                String selectedFile="";
+                try {
+                    selectedFile = chooser.getSelectedFile().getCanonicalPath();
+                } catch (IOException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println(selectedFile);
+                previewPDF(selectedFile);
+            } catch (Exception ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }//GEN-LAST:event_voir_les_autresActionPerformed
+    }
     /**
      * @param args the command line arguments
      */
@@ -915,5 +987,6 @@ document.close();
     private javax.swing.JLabel total_lbl;
     private javax.swing.JLabel total_lbl_fc;
     private javax.swing.JMenuItem vendre_e;
+    private javax.swing.JButton voir_les_autres;
     // End of variables declaration//GEN-END:variables
 }

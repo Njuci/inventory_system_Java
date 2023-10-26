@@ -8,6 +8,7 @@ package gestion.interfaceG;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -20,6 +21,9 @@ public class DIG extends javax.swing.JFrame {
      */
     public DIG() {
         initComponents();
+        
+         ImageIcon icon = new ImageIcon("photos/logo.jpg");
+        setIconImage(icon.getImage());
     }
 
     /**

@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import gestion.interfaceG.*;
+import javax.swing.ImageIcon;
 
 
 
@@ -27,6 +28,9 @@ public class login extends javax.swing.JFrame {
     public login() {
         base_donne=new BDD();
         initComponents();
+        
+         ImageIcon icon = new ImageIcon("photos/logo.jpg");
+        setIconImage(icon.getImage());
     }
 
     /**

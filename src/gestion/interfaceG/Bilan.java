@@ -3,14 +3,52 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gestion.interfaceG;
 
+package gestion.interfaceG;
+import com.itextpdf.text.Image;
+import org.apache.logging.log4j.LogManager;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 import gestion.stock.ResultSetTableModel;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.swing.ImageIcon;
+import javax.imageio.ImageIO;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import com.itextpdf.text.PageSize;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.swing.JOptionPane;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import java.io.File;
+import java.io.FileInputStream;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import com.adobe.acrobat.Viewer;
+import com.itextpdf.text.BadElementException;
+import static gestion.interfaceG.depenses.previewPDF;
+import java.io.IOException;
 /**
  *
  * @author Administrator
@@ -22,6 +60,8 @@ public class Bilan extends javax.swing.JFrame {
     
     public Bilan() throws ClassNotFoundException, SQLException {
         initComponents();
+         ImageIcon icon = new ImageIcon("photos/logo.jpg");
+        setIconImage(icon.getImage());
         base_donne=new BDD();
         afficherTableBilan();
         combox_mois_remplissage();
@@ -104,6 +144,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     rslt=base_donne.RecupererDonne(query7);
         // Défianir le modèle de tableau sur le composant table_user
         table_bilan_fc.setModel(new ResultSetTableModel(rslt));
+        combox_mois_remplissage() ;
      
     }
 
@@ -137,6 +178,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         imprimer = new javax.swing.JButton();
+        voir_lesbilans = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -262,7 +304,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     .addComponent(recher_par_moi)
                     .addComponent(interval_search)
                     .addComponent(search_journey))
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(51, 204, 255));
@@ -344,6 +386,18 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
         jLabel6.setText("Bilan en Francs Congolais");
 
         imprimer.setText("Imprimer");
+        imprimer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                imprimerActionPerformed(evt);
+            }
+        });
+
+        voir_lesbilans.setText("Voir les bilans Imprimés");
+        voir_lesbilans.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                voir_lesbilansActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -351,18 +405,18 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1))
+                    .addComponent(voir_lesbilans))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(475, 475, 475)
-                .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -378,9 +432,11 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(3, 3, 3)
-                .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(voir_lesbilans, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(111, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -541,6 +597,140 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
     
     }//GEN-LAST:event_search_journeyActionPerformed
 
+     public static void previewPDF(String filename) throws Exception {
+         
+ lecteurPDF lecteur = new lecteurPDF(filename);
+ //créer le JFrame
+ JFrame f = new JFrame("Lecteur PDF");
+ f.setSize(1024,768);
+ f.setLocationRelativeTo(null);
+ f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ f.setVisible(true);
+ f.getContentPane().add(lecteur);
+    }
+    private void imprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imprimerActionPerformed
+        // TODO add your handling code here:
+         SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyHHmmss");
+         SimpleDateFormat v = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = new Date();
+                String nom="pdf/bilan/table_bilan"+s.format(date).toString()+".pdf";
+                
+        try {                                         
+            Document document = new Document(PageSize.A4);
+            
+            try {
+                System.out.println(nom);
+                try {
+                    PdfWriter.getInstance(document, new FileOutputStream(nom));
+                    
+                } catch (DocumentException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            document.open();
+             Image image=null;
+             try {
+                 image = Image.getInstance("photos/logo.jpg");
+             } catch (BadElementException ex) {
+                 Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+             } catch (IOException ex) {
+                 Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+             }
+              image.scaleAbsolute(60f, 60f);
+              image.setAbsolutePosition(0f, document.getPageSize().getHeight() - image.getScaledHeight());
+            
+            // Ajoutez l'image au document
+            document.add(image);
+            image.setAbsolutePosition(document.getPageSize().getWidth() - image.getScaledWidth(), document.getPageSize().getHeight() - image.getScaledHeight());
+             document.add(image);
+                 Paragraph paragraph = new Paragraph("Bilan prélevé en $ en date "+v.format(date).toString()+"\n"+"\n");
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+             document.add(paragraph);
+             Paragraph espace = new Paragraph("\n");
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            document.add(espace);
+            document.add(espace);
+            
+            
+            PdfPTable pdfTable = new PdfPTable(table_bilan.getColumnCount());
+            
+// Ajouter les en-têtes de colonne
+        for (int i = 0; i < table_bilan.getColumnCount(); i++) {
+            pdfTable.addCell(table_bilan.getColumnName(i));
+            }
+
+// Ajouter les données de la JTable
+        for (int rows = 0; rows < table_bilan.getRowCount(); rows++) {
+        for (int cols = 0; cols < table_bilan.getColumnCount(); cols++) {
+        pdfTable.addCell(table_bilan.getModel().getValueAt(rows, cols).toString());
+        }
+        }
+
+        document.add(pdfTable);
+        document.add(espace);
+        document.add(espace);
+        
+        
+
+        Paragraph p=new Paragraph("Bilan prélevé en fc en date "+v.format(date).toString()+"\n"+"\n");
+        p.setAlignment(Element.ALIGN_CENTER);
+        document.add(p);
+        document.add(espace);
+        document.add(espace);
+        pdfTable = new PdfPTable(table_bilan_fc.getColumnCount());
+          for (int i = 0; i < table_bilan_fc.getColumnCount(); i++) {
+            pdfTable.addCell(table_bilan_fc.getColumnName(i));
+            }
+
+// Ajouter les données de la JTable
+        for (int rows = 0; rows < table_bilan_fc.getRowCount(); rows++) {
+        for (int cols = 0; cols < table_bilan_fc.getColumnCount(); cols++) {
+        pdfTable.addCell(table_bilan_fc.getModel().getValueAt(rows, cols).toString());
+        }
+        }
+
+        document.add(pdfTable);
+        
+        
+
+
+document.close();
+            try {
+                previewPDF(nom);
+            } catch (Exception ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (DocumentException ex) {
+            Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_imprimerActionPerformed
+
+    private void voir_lesbilansActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voir_lesbilansActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        File currentDir = new File(System.getProperty("user.dir"));
+File subDir = new File(currentDir, "pdf/bilan");
+
+        chooser.setCurrentDirectory(subDir);
+        int result = chooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                String selectedFile="";
+                try {
+                    selectedFile = chooser.getSelectedFile().getCanonicalPath();
+                } catch (IOException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println(selectedFile);
+                previewPDF(selectedFile);
+            } catch (Exception ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }   
+    }//GEN-LAST:event_voir_lesbilansActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -604,5 +794,6 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
     private javax.swing.JButton search_journey;
     private javax.swing.JTable table_bilan;
     private javax.swing.JTable table_bilan_fc;
+    private javax.swing.JButton voir_lesbilans;
     // End of variables declaration//GEN-END:variables
 }

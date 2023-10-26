@@ -5,8 +5,21 @@
  */
 package gestion.interfaceG;
 
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import static gestion.interfaceG.depenses.previewPDF;
 import gestion.stock.ResultSetTableModel;
 import java.awt.print.PrinterException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -15,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -42,6 +56,9 @@ public class Cahier extends javax.swing.JFrame {
         base_donne = new BDD();
 
         initComponents();
+        
+         ImageIcon icon = new ImageIcon("photos/logo.jpg");
+        setIconImage(icon.getImage());
         base_donne.ouvrirLaConnexion();
         // TODO add your handling code here:
         combox_remplissage();
@@ -63,7 +80,7 @@ public class Cahier extends javax.swing.JFrame {
            bill.setText(bill.getText() +search_field.getSelectedItem().toString()+ " \n");
             bill.setText(bill.getText() + " \n");
             bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------------------------\n");
-            bill.setText(bill.getText() + " Code \tref \tPrice \tQty \tSous-total \tDevise \n");
+            bill.setText(bill.getText() + " Code \tDesignation \tPrice \tQty \tSous-total \tDevise \n");
             bill.setText(bill.getText() + "-------------------------------------------------------------------------------------------------------------------------\n");
 
             for (int i = 0; i < table_vente.getRowCount(); i++) {
@@ -119,7 +136,7 @@ public class Cahier extends javax.swing.JFrame {
 
     public void afficherTableVente() throws ClassNotFoundException, SQLException {
 
-        String[] colonnes = {"td.id,td.code_produit", "td.ref", "td.prix_vente", "td.stock_sortie", "td.sous_total","tp.devise"};
+        String[] colonnes = {"td.id,td.code_produit As Code_Produit", "tp.designation As Designation", "td.prix_vente As PV", "td.stock_sortie As Stock_Vendu", "td.sous_total","tp.devise"};
 
         ResultSet resultSet = base_donne.RecupererDonneTableFiltreParEtat(colonnes, "vente As td  JOIN produit As tp", "td.num_facture ='" + search_field.getSelectedItem().toString() + "' and td.code_produit =tp.code_produit");
         String query = "SELECT  DATE_FORMAT(date, '%Y-%m-%d')As date FROM facture WHERE fac_num ='" + search_field.getSelectedItem().toString() + "'";
@@ -250,6 +267,8 @@ public class Cahier extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         date_field = new javax.swing.JLabel();
         heure_field = new javax.swing.JLabel();
+        imprimer_liste_de_produits_restant = new javax.swing.JButton();
+        voir_les_listes = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         lancer = new javax.swing.JButton();
@@ -346,6 +365,20 @@ public class Cahier extends javax.swing.JFrame {
 
         heure_field.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
+        imprimer_liste_de_produits_restant.setText("Imprimer la liste des Produits Dispo");
+        imprimer_liste_de_produits_restant.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                imprimer_liste_de_produits_restantActionPerformed(evt);
+            }
+        });
+
+        voir_les_listes.setText("Voir les precedentes listes ");
+        voir_les_listes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                voir_les_listesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -359,8 +392,15 @@ public class Cahier extends javax.swing.JFrame {
                 .addComponent(heure_field, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1328, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 323, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(imprimer_liste_de_produits_restant, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(1337, 1337, 1337)
+                        .addComponent(voir_les_listes, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -371,8 +411,13 @@ public class Cahier extends javax.swing.JFrame {
                         .addComponent(date_field, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(heure_field, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(imprimer_liste_de_produits_restant, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(voir_les_listes, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(35, 35, 35))
         );
 
@@ -783,7 +828,7 @@ public class Cahier extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1396, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1404, Short.MAX_VALUE))
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -1122,6 +1167,92 @@ public class Cahier extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
+    private void imprimer_liste_de_produits_restantActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imprimer_liste_de_produits_restantActionPerformed
+            try {                                                                   
+                // TODO add your handling code here:
+                // TODO add your handling code here:
+                SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyHHmmss");
+                SimpleDateFormat v = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = new Date();
+                String nom="pdf/produit_restants/table_produits"+s.format(date).toString()+".pdf";
+                
+                
+                Document document = new Document(PageSize.A4.rotate());
+                
+                try {
+                    System.out.println(nom);
+                    try {
+                        PdfWriter.getInstance(document, new FileOutputStream(nom));
+                        
+                    } catch (DocumentException ex) {
+                        Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                document.open();
+                Image image=null;
+                try {
+                    image = Image.getInstance("photos/logo.jpg");
+                } catch (BadElementException ex) {
+                    Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                image.scaleAbsolute(60f, 60f);
+                image.setAbsolutePosition(0f, document.getPageSize().getHeight() - image.getScaledHeight());
+                
+                // Ajoutez l'image au document
+                document.add(image);
+                image.setAbsolutePosition(document.getPageSize().getWidth() - image.getScaledWidth(), document.getPageSize().getHeight() - image.getScaledHeight());
+                document.add(image);
+                Paragraph paragraph = new Paragraph("Les produits restants en date du  "+v.format(date).toString()+"\n"+"\n");
+                paragraph.setAlignment(Element.ALIGN_CENTER);
+                document.add(paragraph);
+                Paragraph espace = new Paragraph("\n");
+                paragraph.setAlignment(Element.ALIGN_CENTER);
+                document.add(espace);
+                document.add(espace);
+                
+                
+                PdfPTable pdfTable = new PdfPTable(table_prod.getColumnCount());
+                
+// Ajouter les en-têtes de colonne
+for (int i = 0; i < table_prod.getColumnCount(); i++) {
+    pdfTable.addCell(table_prod.getColumnName(i));
+}
+
+// Ajouter les données de la JTable
+for (int rows = 0; rows < table_prod.getRowCount(); rows++) {
+    for (int cols = 0; cols < table_prod.getColumnCount(); cols++) {
+        pdfTable.addCell(table_prod.getModel().getValueAt(rows, cols).toString());
+    }
+}
+
+document.add(pdfTable);
+document.add(espace);
+document.add(espace);
+document.close();
+
+
+            try {
+                previewPDF(nom);
+            } catch (Exception ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            } catch (DocumentException ex) {
+                Logger.getLogger(Cahier.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        
+        
+    }//GEN-LAST:event_imprimer_liste_de_produits_restantActionPerformed
+
+    private void voir_les_listesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voir_les_listesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_voir_les_listesActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1176,6 +1307,7 @@ public class Cahier extends javax.swing.JFrame {
     private javax.swing.JLabel g;
     private javax.swing.JLabel heure_field;
     private javax.swing.JButton imprimer;
+    private javax.swing.JButton imprimer_liste_de_produits_restant;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
@@ -1221,5 +1353,6 @@ public class Cahier extends javax.swing.JFrame {
     private javax.swing.JLabel um_field;
     private javax.swing.JButton valider_vente;
     private javax.swing.JMenuItem voir_depenses;
+    private javax.swing.JButton voir_les_listes;
     // End of variables declaration//GEN-END:variables
 }

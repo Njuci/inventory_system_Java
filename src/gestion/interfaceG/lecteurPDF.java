@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import com.adobe.acrobat.Viewer;
+import javax.swing.ImageIcon;
 /*
  * www.codeurjava.com
  */
@@ -19,13 +20,14 @@ public class lecteurPDF extends JPanel{
  
  public lecteurPDF(String nomfichier) throws Exception{
  this.setLayout(new BorderLayout());
- 
+  ImageIcon icon = new ImageIcon("photos/logo.jpg");
+     
  //créer le viewer qui va servir à afficher le contenu du pdf
  viewer = new Viewer();
  this.add(viewer, BorderLayout.CENTER);
  FileInputStream fis = new FileInputStream(nomfichier);
  viewer.setDocumentInputStream(fis);
  viewer.activate();
-
- }
  
+ }
+}

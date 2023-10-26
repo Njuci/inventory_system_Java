@@ -10,6 +10,7 @@ import gestion.interfaceG.*;
 
 
 import java.sql.ResultSet;
+import javax.swing.ImageIcon;
 
 public class Utilisateur extends javax.swing.JFrame {
 
@@ -20,6 +21,9 @@ public class Utilisateur extends javax.swing.JFrame {
     public Utilisateur() throws SQLException, ClassNotFoundException {
         base_donne=new BDD();
         initComponents();
+        
+         ImageIcon icon = new ImageIcon("photos/logo.jpg");
+        setIconImage(icon.getImage());
         this.setBounds(400, 300, 950, 550);
         this.setResizable(false);
         base_donne.ouvrirLaConnexion();

@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -25,6 +26,9 @@ public class Produit extends javax.swing.JFrame {
         
         
         initComponents();
+        
+         ImageIcon icon = new ImageIcon("photos/logo.jpg");
+        setIconImage(icon.getImage());
        base_donne.ouvrirLaConnexion();
             // TODO add your handling code here:
 
