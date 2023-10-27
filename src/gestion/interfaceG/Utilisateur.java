@@ -80,6 +80,7 @@ public class Utilisateur extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         recherche_Btn = new javax.swing.JButton();
         type_field = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -247,6 +248,17 @@ public class Utilisateur extends javax.swing.JFrame {
         });
         jPanel1.add(type_field);
         type_field.setBounds(130, 160, 90, 26);
+
+        jButton1.setText("Retour");
+        jButton1.setMaximumSize(new java.awt.Dimension(169, 29));
+        jButton1.setMinimumSize(new java.awt.Dimension(169, 29));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1);
+        jButton1.setBounds(300, 140, 170, 50);
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 280, 950, 420));
 
@@ -427,6 +439,13 @@ public class Utilisateur extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_type_fieldActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        DIG n= new DIG();n.setVisible(true);
+        this.dispose();
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -474,6 +493,7 @@ public class Utilisateur extends javax.swing.JFrame {
     private javax.swing.JButton Modifierbtn;
     private javax.swing.JButton SupprimerBtn;
     private javax.swing.JTextField id_user_field;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

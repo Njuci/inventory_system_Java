@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package gestion.interfaceG;
-import org.apache.logging.log4j.LogManager;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -15,8 +14,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -213,6 +210,7 @@ public void date_set() {
         total_lbl_fc = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         voir_les_autres = new javax.swing.JButton();
+        retour = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         vendre_e = new javax.swing.JMenuItem();
@@ -478,7 +476,7 @@ public void date_set() {
             }
         });
         jPanel2.add(imprimer);
-        imprimer.setBounds(800, 240, 130, 50);
+        imprimer.setBounds(810, 240, 130, 50);
 
         table_depense_fc.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -547,6 +545,15 @@ public void date_set() {
         });
         jPanel2.add(voir_les_autres);
         voir_les_autres.setBounds(410, 240, 160, 50);
+
+        retour.setText("Retour");
+        retour.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                retourActionPerformed(evt);
+            }
+        });
+        jPanel2.add(retour);
+        retour.setBounds(610, 300, 130, 50);
 
         getContentPane().add(jPanel2);
         jPanel2.setBounds(0, 240, 1440, 370);
@@ -905,7 +912,19 @@ File subDir = new File(currentDir, "pdf/depenses");
                 Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
             }
     }//GEN-LAST:event_voir_les_autresActionPerformed
-    }
+
+
+}
+
+    private void retourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retourActionPerformed
+        // TODO add your handling code here:
+         DIG n= new DIG();n.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_retourActionPerformed
+
+
+
+
     /**
      * @param args the command line arguments
      */
@@ -981,6 +1000,7 @@ File subDir = new File(currentDir, "pdf/depenses");
     private javax.swing.JButton modifier_btn;
     private javax.swing.JComboBox<String> moi_field;
     private javax.swing.JTextField montant_field;
+    private javax.swing.JButton retour;
     private javax.swing.JButton supprimer_btn;
     private javax.swing.JTable table_depense;
     private javax.swing.JTable table_depense_fc;

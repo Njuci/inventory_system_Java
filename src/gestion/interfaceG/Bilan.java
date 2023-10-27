@@ -179,6 +179,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
         jLabel6 = new javax.swing.JLabel();
         imprimer = new javax.swing.JButton();
         voir_lesbilans = new javax.swing.JButton();
+        retour = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -399,6 +400,13 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
             }
         });
 
+        retour.setText("Retour");
+        retour.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                retourActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -410,13 +418,17 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                         .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane1))
                     .addComponent(voir_lesbilans))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(retour, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(477, 477, 477))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -436,7 +448,9 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(voir_lesbilans, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(111, Short.MAX_VALUE))
+                .addGap(21, 21, 21)
+                .addComponent(retour, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(93, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -731,6 +745,14 @@ File subDir = new File(currentDir, "pdf/bilan");
     }   
     }//GEN-LAST:event_voir_lesbilansActionPerformed
 
+    private void retourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retourActionPerformed
+        // TODO add your handling code here:
+                // TODO add your handling code here:
+        DIG n= new DIG();n.setVisible(true);
+        this.dispose();
+
+    }//GEN-LAST:event_retourActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -791,6 +813,7 @@ File subDir = new File(currentDir, "pdf/bilan");
     private javax.swing.JComboBox<String> jour;
     private javax.swing.JComboBox<String> moi_field;
     private javax.swing.JButton recher_par_moi;
+    private javax.swing.JButton retour;
     private javax.swing.JButton search_journey;
     private javax.swing.JTable table_bilan;
     private javax.swing.JTable table_bilan_fc;

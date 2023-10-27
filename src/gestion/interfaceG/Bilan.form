@@ -267,15 +267,20 @@
                       </Group>
                       <Component id="voir_lesbilans" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="157" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel6" alignment="1" min="-2" pref="452" max="-2" attributes="0"/>
                           <Component id="jScrollPane2" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="imprimer" min="-2" pref="130" max="-2" attributes="0"/>
+                      <Component id="imprimer" alignment="0" min="-2" pref="130" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="retour" min="-2" pref="130" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="477" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -300,9 +305,11 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="voir_lesbilans" min="-2" pref="45" max="-2" attributes="0"/>
-                      <Component id="imprimer" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
+                      <Component id="imprimer" min="-2" pref="45" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="111" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                  <Component id="retour" min="-2" pref="51" max="-2" attributes="0"/>
+                  <EmptySpace pref="93" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -382,6 +389,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="voir_lesbilansActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="retour">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Retour"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="retourActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

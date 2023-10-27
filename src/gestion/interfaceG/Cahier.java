@@ -14,9 +14,11 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import static gestion.interfaceG.Bilan.previewPDF;
 import static gestion.interfaceG.depenses.previewPDF;
 import gestion.stock.ResultSetTableModel;
 import java.awt.print.PrinterException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +31,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -277,7 +281,7 @@ public class Cahier extends javax.swing.JFrame {
         table_vente = new javax.swing.JTable();
         jLabel22 = new javax.swing.JLabel();
         total_facture = new javax.swing.JLabel();
-        jButton5 = new javax.swing.JButton();
+        annuler = new javax.swing.JButton();
         imprimer = new javax.swing.JButton();
         jLabel24 = new javax.swing.JLabel();
         search_field = new javax.swing.JComboBox<>();
@@ -477,10 +481,10 @@ public class Cahier extends javax.swing.JFrame {
         total_facture.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
         total_facture.setText("0");
 
-        jButton5.setText("Annuler");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        annuler.setText("Retour");
+        annuler.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                annulerActionPerformed(evt);
             }
         });
 
@@ -551,8 +555,8 @@ public class Cahier extends javax.swing.JFrame {
                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addGap(43, 43, 43)
                                     .addComponent(imprimer)
-                                    .addGap(337, 337, 337)
-                                    .addComponent(jButton5))
+                                    .addGap(278, 278, 278)
+                                    .addComponent(annuler, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                     .addComponent(date_venrte_field, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -594,7 +598,7 @@ public class Cahier extends javax.swing.JFrame {
                             .addComponent(total_facture_fc, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(44, 44, 44)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(annuler, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(imprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(48, 48, 48))
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -866,9 +870,18 @@ public class Cahier extends javax.swing.JFrame {
 
     }//GEN-LAST:event_lancerActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void annulerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annulerActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+                // TODO add your handling code here:
+        DIG n= new DIG();n.setVisible(true);
+        this.dispose();
+
+        
+        
+        
+        
+        
+    }//GEN-LAST:event_annulerActionPerformed
 
     private void imprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imprimerActionPerformed
         try {
@@ -1248,9 +1261,39 @@ document.close();
         
         
     }//GEN-LAST:event_imprimer_liste_de_produits_restantActionPerformed
-
+ public static void previewPDF(String filename) throws Exception {
+         
+ lecteurPDF lecteur = new lecteurPDF(filename);
+ //créer le JFrame
+ JFrame f = new JFrame("Lecteur PDF");
+ f.setSize(1024,768);
+ f.setLocationRelativeTo(null);
+ f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ f.setVisible(true);
+ f.getContentPane().add(lecteur);
+    }
     private void voir_les_listesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_voir_les_listesActionPerformed
         // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        File currentDir = new File(System.getProperty("user.dir"));
+File subDir = new File(currentDir, "pdf/produit_restants");
+
+        chooser.setCurrentDirectory(subDir);
+        int result = chooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                String selectedFile="";
+                try {
+                    selectedFile = chooser.getSelectedFile().getCanonicalPath();
+                } catch (IOException ex) {
+                    Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println(selectedFile);
+                previewPDF(selectedFile);
+            } catch (Exception ex) {
+                Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }   
     }//GEN-LAST:event_voir_les_listesActionPerformed
 
     /**
@@ -1298,6 +1341,7 @@ document.close();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton annuler;
     private javax.swing.JTextArea bill;
     private javax.swing.JTextField code_prod_field1;
     private javax.swing.JLabel date_field;
@@ -1309,7 +1353,6 @@ document.close();
     private javax.swing.JButton imprimer;
     private javax.swing.JButton imprimer_liste_de_produits_restant;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
