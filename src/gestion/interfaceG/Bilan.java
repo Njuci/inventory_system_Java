@@ -6,7 +6,7 @@
 
 package gestion.interfaceG;
 import com.itextpdf.text.Image;
-import org.apache.logging.log4j.LogManager;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -18,8 +18,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.imageio.ImageIO;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,7 +55,7 @@ public class Bilan extends javax.swing.JFrame {
 
     ResultSet rslt = null;
     BDD base_donne;
-    
+
     public Bilan() throws ClassNotFoundException, SQLException {
         initComponents();
          ImageIcon icon = new ImageIcon("photos/logo.jpg");
@@ -73,7 +71,7 @@ public class Bilan extends javax.swing.JFrame {
                 "  UNION\n" +
                 "  SELECT date AS date FROM depenses\n" +
                 ") AS dates";
-         
+
         rslt = base_donne.RecupererDonne(query);
         moi_field.removeAllItems();
         debut_date.removeAllItems();
@@ -88,7 +86,7 @@ public class Bilan extends javax.swing.JFrame {
                 "  UNION\n" +
                 "  SELECT date AS date FROM depenses\n" +
                 ") AS dates ORDER BY(date)";
-         
+
         rslt = base_donne.RecupererDonne(query1);
          while (rslt.next()) {
            jour.addItem(rslt.getString("moi"));
@@ -96,7 +94,7 @@ public class Bilan extends javax.swing.JFrame {
            fin_date.addItem(rslt.getString("moi"));
 
         }
-        
+
         rslt.close();
 
     }
@@ -106,7 +104,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                 "  UNION\n" +
                 "  SELECT date AS date FROM depenses\n" +
                 ") AS dates";
-         
+
         rslt = base_donne.RecupererDonne(query);
         debut_date.removeAllItems();
         jour.removeAllItems();
@@ -119,7 +117,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
 
     }
     public void afficherTableBilan() throws ClassNotFoundException, SQLException {
-     
+
 
     String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
@@ -132,7 +130,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     rslt=base_donne.RecupererDonne(query6);
         // Défianir le modèle de tableau sur le composant table_user
         table_bilan.setModel(new ResultSetTableModel(rslt));
-        
+
     String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
                     "FROM (\n" +
@@ -145,7 +143,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
         // Défianir le modèle de tableau sur le composant table_user
         table_bilan_fc.setModel(new ResultSetTableModel(rslt));
         combox_mois_remplissage() ;
-     
+
     }
 
     /**
@@ -489,7 +487,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
     }//GEN-LAST:event_fin_dateActionPerformed
 
     private void recher_par_moiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recher_par_moiActionPerformed
-        try {                                               
+        try {
             // TODO add your handling code here:
             String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
@@ -498,12 +496,12 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$'\n" +
                     ") AS t\n" +" WHERE date like '%"+ moi_field.getSelectedItem().toString()+"%'\n "+
                     "GROUP BY date";
-            
+
                 rslt=base_donne.RecupererDonne(query6);
-           
+
             // Défianir le modèle de tableau sur le composant table_user
             table_bilan.setModel(new ResultSetTableModel(rslt));
-            
+
             String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
                     "FROM (\n" +
@@ -511,27 +509,27 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='fc'\n" +
                     ") AS t\n" +" WHERE date like '%"+ moi_field.getSelectedItem().toString()+"%'\n "+
                     "GROUP BY date";
-            
+
             rslt=base_donne.RecupererDonne(query7);
             // Défianir le modèle de tableau sur le composant table_user
             table_bilan_fc.setModel(new ResultSetTableModel(rslt));
-            
-            
-            
+
+
+
         } catch (SQLException ex) {
             Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
         }
-     
-    
-        
-        
+
+
+
+
     }//GEN-LAST:event_recher_par_moiActionPerformed
 
     private void interval_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interval_searchActionPerformed
         // TODO add your handling code here:
-        try {                                               
+        try {
             // TODO add your handling code here:
             String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
@@ -540,12 +538,12 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$'  \n" +
                     ") AS t\n" +" where  date BETWEEN '"+ debut_date.getSelectedItem().toString() +"' and '"+fin_date.getSelectedItem().toString()+"'\n" +
                     "GROUP BY date";
-            
+
                 rslt=base_donne.RecupererDonne(query6);
-           
+
             // Défianir le modèle de tableau sur le composant table_user
             table_bilan.setModel(new ResultSetTableModel(rslt));
-            
+
             String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
                     "FROM (\n" +
@@ -553,27 +551,27 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='fc'  \n" +
                     ") AS t\n" +" where  date BETWEEN '"+ debut_date.getSelectedItem().toString() +"' and '"+fin_date.getSelectedItem().toString()+"'\n" +
                     "GROUP BY date";
-            
+
             rslt=base_donne.RecupererDonne(query7);
             // Défianir le modèle de tableau sur le composant table_user
             table_bilan_fc.setModel(new ResultSetTableModel(rslt));
             System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-            
-            
-            
+
+
+
         } catch (SQLException ex) {
             Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
         }
-     
-        
-        
+
+
+
     }//GEN-LAST:event_interval_searchActionPerformed
 
     private void search_journeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search_journeyActionPerformed
         // TODO add your handling code here:
-         try {                                               
+         try {
             // TODO add your handling code here:
             String query6="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
@@ -582,12 +580,12 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='$'\n" +
                     ") AS t\n" +" WHERE date like '%"+ jour.getSelectedItem().toString()+"%'\n "+
                     "GROUP BY date";
-            
+
                 rslt=base_donne.RecupererDonne(query6);
-           
+
             // Défianir le modèle de tableau sur le composant table_user
             table_bilan.setModel(new ResultSetTableModel(rslt));
-            
+
             String query7="SELECT DATE_FORMAT(date, '%Y-%m-%d')AS Date, SUM(sous_total) AS Ventes, SUM(sorties) AS Depenses, SUM(sous_total) - SUM(sorties) AS Difference,\n" +
                     " SUM(SUM(sous_total) - SUM(sorties)) OVER (ORDER BY date) AS Cumul\n" +
                     "FROM (\n" +
@@ -595,24 +593,24 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
                     "  SELECT date, 0 AS vente, montant FROM depenses  WHERE  devise ='fc'\n" +
                     ") AS t\n" +" WHERE date like '%"+ jour.getSelectedItem().toString()+"%'\n "+
                     "GROUP BY date";
-            
+
             rslt=base_donne.RecupererDonne(query7);
             // Défianir le modèle de tableau sur le composant table_user
             table_bilan_fc.setModel(new ResultSetTableModel(rslt));
-            
-            
-            
+
+
+
         } catch (SQLException ex) {
             Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Bilan.class.getName()).log(Level.SEVERE, null, ex);
         }
-     
-    
+
+
     }//GEN-LAST:event_search_journeyActionPerformed
 
      public static void previewPDF(String filename) throws Exception {
-         
+
  lecteurPDF lecteur = new lecteurPDF(filename);
  //créer le JFrame
  JFrame f = new JFrame("Lecteur PDF");
@@ -628,15 +626,15 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
          SimpleDateFormat v = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Date date = new Date();
                 String nom="pdf/bilan/table_bilan"+s.format(date).toString()+".pdf";
-                
-        try {                                         
+
+        try {
             Document document = new Document(PageSize.A4);
-            
+
             try {
                 System.out.println(nom);
                 try {
                     PdfWriter.getInstance(document, new FileOutputStream(nom));
-                    
+
                 } catch (DocumentException ex) {
                     Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -654,7 +652,7 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
              }
               image.scaleAbsolute(60f, 60f);
               image.setAbsolutePosition(0f, document.getPageSize().getHeight() - image.getScaledHeight());
-            
+
             // Ajoutez l'image au document
             document.add(image);
             image.setAbsolutePosition(document.getPageSize().getWidth() - image.getScaledWidth(), document.getPageSize().getHeight() - image.getScaledHeight());
@@ -666,10 +664,10 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
             paragraph.setAlignment(Element.ALIGN_CENTER);
             document.add(espace);
             document.add(espace);
-            
-            
+
+
             PdfPTable pdfTable = new PdfPTable(table_bilan.getColumnCount());
-            
+
 // Ajouter les en-têtes de colonne
         for (int i = 0; i < table_bilan.getColumnCount(); i++) {
             pdfTable.addCell(table_bilan.getColumnName(i));
@@ -685,8 +683,8 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
         document.add(pdfTable);
         document.add(espace);
         document.add(espace);
-        
-        
+
+
 
         Paragraph p=new Paragraph("Bilan prélevé en fc en date "+v.format(date).toString()+"\n"+"\n");
         p.setAlignment(Element.ALIGN_CENTER);
@@ -706,8 +704,8 @@ public void combox_remplissage() throws SQLException, ClassNotFoundException {
         }
 
         document.add(pdfTable);
-        
-        
+
+
 
 
 document.close();
@@ -742,7 +740,7 @@ File subDir = new File(currentDir, "pdf/bilan");
             } catch (Exception ex) {
                 Logger.getLogger(depenses.class.getName()).log(Level.SEVERE, null, ex);
             }
-    }   
+    }
     }//GEN-LAST:event_voir_lesbilansActionPerformed
 
     private void retourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retourActionPerformed
@@ -760,7 +758,7 @@ File subDir = new File(currentDir, "pdf/bilan");
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
